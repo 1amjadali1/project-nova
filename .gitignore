@@ -1,0 +1,36 @@
+# Node
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+.env.local
+.env.development
+.env.production
+
+# Build
+dist/
+build/
+.next/
+out/
+
+# Prisma
+prisma/dev.db
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+
+# Misc
+*.tmp
+*.cache
