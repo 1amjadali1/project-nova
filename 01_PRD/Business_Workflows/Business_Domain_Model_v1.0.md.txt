@@ -1,0 +1,314 @@
+# Business Domain Model
+
+## Project Information
+
+| Property | Value |
+|----------|-------|
+| Project | Project Nova |
+| Document | Business Domain Model |
+| Version | 1.0 |
+| Status | Draft |
+| Owner | Founder & Virtual CTO |
+| Last Updated | TBD |
+
+---
+
+# Purpose
+
+This document defines the core business entities, stakeholders, relationships, and workflows of Project Nova.
+
+It serves as the foundation for:
+
+- Product Requirements
+- Database Design
+- API Design
+- User Permissions
+- AI Workflows
+- Reporting Engine
+- Future System Integrations
+
+No database tables or technical implementation should be defined in this document.
+
+---
+
+# Business Overview
+
+Project Nova is a SaaS-based Background Verification Platform designed to help organizations verify employment-related information quickly, securely, and efficiently.
+
+The platform supports multiple verification services while providing a centralized workspace for clients and internal operations teams.
+
+---
+
+# Primary Actors
+
+## 1. Client Company
+
+The organization requesting background verification.
+
+### Responsibilities
+
+- Create verification cases
+- Upload candidate documents
+- Track verification progress
+- Download reports
+- Manage company users
+- View billing (future)
+
+---
+
+## 2. Candidate
+
+The individual whose background is being verified.
+
+The candidate is not a platform user during the MVP.
+
+Candidate documents are submitted by the client company.
+
+Future versions may introduce a dedicated Candidate Portal.
+
+---
+
+## 3. Operations Executive
+
+Responsible for performing verification activities.
+
+Responsibilities include:
+
+- Reviewing assigned cases
+- Validating documents
+- Performing verification checks
+- Recording observations
+- Requesting missing information
+- Submitting completed work for review
+
+---
+
+## 4. Operations Team Leader
+
+Responsible for supervising Operations Executives.
+
+Responsibilities include:
+
+- Reviewing team workload
+- Assigning and reassigning cases
+- Performing quality checks
+- Monitoring turnaround time (TAT)
+- Managing escalations
+- Reviewing completed cases before manager approval
+
+---
+
+## 5. Operations Manager
+
+Responsible for overall verification operations.
+
+Responsibilities include:
+
+- Monitoring all verification activities
+- Managing Operations Team Leaders
+- Reviewing operational analytics
+- Monitoring SLA and TAT
+- Handling escalated cases
+- Approving operational workflows
+- Managing team performance
+
+---
+
+## 6. Platform Administrator
+
+Responsible for platform administration.
+
+Responsibilities include:
+
+- Company management
+- User management
+- Role management
+- Permission management
+- API vendor configuration
+- Verification package management
+- Platform settings
+- Audit monitoring
+
+---
+
+# Core Business Entity
+
+## Verification Case
+
+A Verification Case represents one complete background verification request initiated by a client company for a candidate.
+
+Every verification activity belongs to a Verification Case.
+
+Each Verification Case may contain multiple verification checks.
+
+---
+
+# Verification Checks
+
+A Verification Case may include one or more of the following verification types:
+
+- Identity Verification
+- Employment Verification
+- Education Verification
+- Address Verification
+- Court Record Verification
+- Reference Verification
+- Bank Account Verification
+
+Each verification type operates independently while contributing to the final report.
+
+---
+
+# Candidate Documents
+
+Client companies may upload one or more supporting documents.
+
+Examples include:
+
+- Resume
+- Aadhaar
+- PAN
+- Passport
+- Degree Certificate
+- Experience Letter
+- Salary Slip
+- Offer Letter
+- Bank Proof
+- Address Proof
+
+Each document maintains its own lifecycle.
+
+---
+
+# Verification Status
+
+Platform-wide verification status values:
+
+- Draft
+- Submitted
+- In Progress
+- Awaiting Documents
+- Under Review
+- Completed
+- Rejected
+- Cancelled
+
+These status values shall remain standardized across the platform.
+
+---
+
+# Risk Classification
+
+Each completed verification may be categorized as:
+
+- Low Risk
+- Medium Risk
+- High Risk
+- Critical Risk
+
+Risk classification is determined based on verification outcomes and business rules.
+
+---
+
+# Final Verification Report
+
+Each Verification Case generates one official verification report.
+
+The report becomes immutable after final approval.
+
+Any modifications require a new report version.
+
+---
+
+# Audit Trail
+
+Every critical activity performed within the platform shall be recorded.
+
+Examples include:
+
+- Login
+- Case Creation
+- Document Upload
+- Verification Started
+- Verification Completed
+- Report Generated
+- Report Downloaded
+- User Management Activities
+
+Audit logs shall support compliance, investigations, and internal monitoring.
+
+---
+
+# Notifications
+
+The platform shall notify users regarding important events including:
+
+- New Verification Case
+- Missing Documents
+- Verification Completed
+- Report Available
+- Escalations
+- Assignment Updates
+
+---
+
+# Verification Packages
+
+The platform supports configurable verification packages.
+
+Examples:
+
+- Basic
+- Standard
+- Premium
+- Enterprise
+- Custom
+
+Each package defines a predefined combination of verification services.
+
+---
+
+# Business Principles
+
+Project Nova follows these principles:
+
+- Documentation First
+- Security by Design
+- API First Architecture
+- Human-Assisted Verification
+- AI-Assisted Risk Analysis
+- Role-Based Access Control
+- Audit Everything
+- Scalable Architecture
+
+---
+
+# Out of Scope (MVP)
+
+The following capabilities are intentionally excluded from the MVP:
+
+- Candidate Portal
+- Mobile Applications
+- Payroll Integrations
+- International Verification
+- AI Decision Automation
+- White-label Platform
+
+These features may be considered in future releases.
+
+---
+
+# Future Expansion
+
+Future platform capabilities may include:
+
+- Vendor Verification
+- Business Verification
+- Employee Onboarding
+- Continuous Background Monitoring
+- Compliance Dashboard
+- Digital Identity Wallet
+- AI Risk Intelligence
+- HRMS Integrations
+
+---

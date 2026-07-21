@@ -1,0 +1,35 @@
+Dashboard
+
+Verification
+
+Reports
+
+Screen
+
+↓
+
+Action
+
+↓
+
+Business Rule
+
+↓
+
+Next Screen
+
+Example:
+
+Dashboard
+
+↓
+
+Click New Verification
+
+↓
+
+System creates Draft Case
+
+↓
+
+Candidate Form

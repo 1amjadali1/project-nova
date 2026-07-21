@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Candidate Deep Dive - Project Nova</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ffb596",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#283044",
+                        "inverse-primary": "#b4c5ff",
+                        "outline-variant": "#c3c6d7",
+                        "surface-tint": "#0053db",
+                        "on-surface-variant": "#434655",
+                        "surface": "#faf8ff",
+                        "primary-fixed": "#dbe1ff",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "on-tertiary-container": "#ffede6",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-surface": "#131b2e",
+                        "background": "#faf8ff",
+                        "on-primary-container": "#eeefff",
+                        "surface-container": "#eaedff",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f2f3ff",
+                        "primary": "#004ac6",
+                        "on-secondary-fixed": "#0b1c30",
+                        "outline": "#737686",
+                        "primary-container": "#2563eb",
+                        "on-background": "#131b2e",
+                        "tertiary-fixed": "#ffdbcd",
+                        "on-tertiary-fixed": "#360f00",
+                        "on-secondary-container": "#54647a",
+                        "surface-dim": "#d2d9f4",
+                        "tertiary": "#943700",
+                        "secondary": "#505f76",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-variant": "#dae2fd",
+                        "tertiary-container": "#bc4800",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "secondary-container": "#d0e1fb",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#e2e7ff",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#dae2fd",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#eef0ff",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-primary-fixed": "#00174b",
+                        "surface-bright": "#faf8ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "xs": "4px",
+                        "xl": "40px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "mono-label": ["JetBrains Mono"],
+                        "title-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "mono-label": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "title-lg": ["18px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid theme('colors.surface-container-high'); }
+        .status-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 9999px; font-family: theme('fontFamily.mono-label'); font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+        .status-clear { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .status-pending { background-color: #fef9c3; color: #854d0e; border: 1px solid #fef08a; }
+        .status-flagged { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    </style>
+</head>
+<body class="antialiased flex h-screen overflow-hidden">
+<!-- SideNavBar (Hidden on Mobile) -->
+<aside class="hidden md:flex flex-col w-64 h-full fixed left-0 top-0 py-md px-base bg-surface-container-low border-r border-outline-variant z-40">
+<div class="mb-xl px-sm flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="shield" style="font-size: 32px;">shield</span>
+<div>
+<div class="font-headline-sm text-headline-sm font-black text-primary">Project Nova</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Verification Suite</div>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-sm">
+<a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-label-md bg-secondary-container text-on-secondary-container font-bold transition-all scale-95 opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span> Overview
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="fingerprint">fingerprint</span> Identity Checks
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="gavel">gavel</span> Criminal Records
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="work">work</span> Employment
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span> Education
+            </a>
+</nav>
+<div class="mt-auto flex flex-col gap-sm">
+<a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span> Support
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="policy">policy</span> Legal
+            </a>
+<button class="mt-sm w-full bg-primary-container text-on-primary py-sm rounded font-label-md text-label-md font-bold hover:opacity-90 transition-opacity">Generate Report</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-64 flex flex-col h-full overflow-y-auto">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center px-lg h-16 w-full sticky top-0 z-50 bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-md">
+<div class="font-headline-md text-headline-md font-bold text-primary md:hidden">Nova Enterprise</div>
+<!-- Nav Links for Desktop -->
+<nav class="hidden md:flex gap-lg h-full items-center">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="font-body-md text-body-md text-primary border-b-2 border-primary pb-1 font-bold opacity-80 transition-opacity" href="#">Verifications</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Analytics</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Compliance</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="hidden md:block border border-outline-variant text-on-surface py-xs px-sm rounded font-label-md text-label-md hover:bg-surface-container-low transition-colors">New Request</button>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary" data-icon="settings">settings</span>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover ml-sm" data-alt="A small, professional headshot of a user, clean lighting, white background, suitable for a web application avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDH6iLM2ZYGJBoHea3bYqkyB_1UbuB1bk9nmawAPYXWRRfEO6kw9jSLn5aJfa356j6jXCYxr0LB45yxEdLavyltW9cmsSu2CevBODWlWKH5CpnpExofM6gC00YRfAvub5fOmrcp1JhDG9Bxvh_K3n9rvBJanEXai_nwwdRr6-HU_EX3emfNp76AqbPYv9l16aDaYZugMdaFVNWw5nrA2DPsDpLWyMfrXfeyTces6LsQrmgX2a0rBuOv"/>
+</div>
+</header>
+<!-- Canvas -->
+<div class="p-md md:p-lg max-w-container-max mx-auto w-full flex-1">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-lg gap-md">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined text-sm" data-icon="arrow_back">arrow_back</span></a>
+<span class="font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Verification ID: NV-2024-8842</span>
+</div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Alex Rivera</h1>
+<p class="font-body-md text-body-md text-secondary mt-xs">Senior Software Engineer Candidate • Initiated Oct 24, 2024</p>
+</div>
+<div class="flex gap-sm w-full md:w-auto">
+<button class="flex-1 md:flex-none px-md py-sm border border-outline-variant rounded font-label-md text-label-md text-on-surface bg-surface hover:bg-surface-container-low transition-colors flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[16px]" data-icon="download">download</span> Interim PDF
+                    </button>
+<button class="flex-1 md:flex-none px-md py-sm bg-primary-container text-on-primary rounded font-label-md text-label-md font-bold shadow-[0px_1px_2px_rgba(0,0,0,0.05),_0px_4px_6px_-1px_rgba(0,0,0,0.02)] hover:opacity-90 transition-opacity flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[16px]" data-icon="task_alt">task_alt</span> Finalize Report
+                    </button>
+</div>
+</div>
+<!-- Global Status Ribbon -->
+<div class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-sm md:p-md mb-lg flex flex-col md:flex-row items-center justify-between gap-md">
+<div class="flex items-center gap-lg w-full md:w-auto overflow-x-auto pb-sm md:pb-0">
+<div class="flex flex-col min-w-max">
+<span class="font-mono-label text-mono-label text-secondary mb-xs">OVERALL STATUS</span>
+<div class="flex items-center gap-xs"><span class="status-badge status-pending">In Progress</span></div>
+</div>
+<div class="h-8 w-px bg-outline-variant hidden md:block"></div>
+<div class="flex flex-col min-w-max">
+<span class="font-mono-label text-mono-label text-secondary mb-xs">IDENTITY</span>
+<div class="flex items-center gap-xs"><span class="status-badge status-clear">Verified</span></div>
+</div>
+<div class="h-8 w-px bg-outline-variant hidden md:block"></div>
+<div class="flex flex-col min-w-max">
+<span class="font-mono-label text-mono-label text-secondary mb-xs">CRIMINAL</span>
+<div class="flex items-center gap-xs"><span class="status-badge status-clear">Clear</span></div>
+</div>
+<div class="h-8 w-px bg-outline-variant hidden md:block"></div>
+<div class="flex flex-col min-w-max">
+<span class="font-mono-label text-mono-label text-secondary mb-xs">EMPLOYMENT</span>
+<div class="flex items-center gap-xs"><span class="status-badge status-pending">Awaiting Reply</span></div>
+</div>
+</div>
+<div class="text-right w-full md:w-auto">
+<div class="font-title-lg text-title-lg text-primary">75%</div>
+<div class="font-mono-label text-mono-label text-secondary">COMPLETION</div>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-md">
+<!-- Left Column: Identity & Criminal (8 cols) -->
+<div class="md:col-span-8 flex flex-col gap-md">
+<!-- Identity Card -->
+<div class="bg-surface border border-outline-variant rounded-lg p-lg shadow-[0px_1px_2px_rgba(0,0,0,0.05)]">
+<div class="flex justify-between items-center border-b border-outline-variant pb-sm mb-md">
+<h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="badge">badge</span> Identity Verification
+                            </h2>
+<span class="status-badge status-clear">Passed</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div>
+<img alt="ID Document Preview" class="w-full h-32 object-cover rounded border border-outline-variant mb-sm" data-alt="A clean, flat lay photograph of a high-security ID card template on a modern slate desk. The lighting is bright and evenly distributed, highlighting the holographic security elements and crisp typography of the ID. The setting feels secure and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBMJl3gA4KhJYKwjV6kFfAs6cWR5u6fzlC99L0vgB43z79UExp6VVV0CZO2FVX6BAytchEyPLN2u7YvQvSysfUZjQkH6KyF3Y9AGfQvweTBbQHnqoIZGxrQlMJlgbptBUgB17gUOqwj4EZ7Mm55eMZYFqVfXItyPvpPbzVMp72ww0cZ8CaAptzhGGciMomYZktdDQhDoNEt4qvukVxjZcJIsIo0dVz2UA0o12M4VNUDM1ziNteGGMv"/>
+<a class="font-label-md text-label-md text-primary hover:underline flex items-center gap-xs" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="visibility">visibility</span> View Uploaded Document
+                                </a>
+</div>
+<div class="flex flex-col gap-sm">
+<div class="flex justify-between items-center py-xs border-b border-outline-variant">
+<span class="font-body-md text-body-md text-secondary">Full Name</span>
+<span class="font-mono-label text-mono-label text-on-surface">Alex Julian Rivera</span>
+</div>
+<div class="flex justify-between items-center py-xs border-b border-outline-variant">
+<span class="font-body-md text-body-md text-secondary">Date of Birth</span>
+<span class="font-mono-label text-mono-label text-on-surface">1988-04-12</span>
+</div>
+<div class="flex justify-between items-center py-xs border-b border-outline-variant">
+<span class="font-body-md text-body-md text-secondary">SSN Trace</span>
+<span class="font-mono-label text-mono-label text-on-surface flex items-center gap-xs text-[#166534]"><span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span> Match</span>
+</div>
+<div class="flex justify-between items-center py-xs">
+<span class="font-body-md text-body-md text-secondary">Address History</span>
+<span class="font-mono-label text-mono-label text-on-surface">Verified (3 locations)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Criminal Record Summary -->
+<div class="bg-surface border border-outline-variant rounded-lg p-lg shadow-[0px_1px_2px_rgba(0,0,0,0.05)]">
+<div class="flex justify-between items-center border-b border-outline-variant pb-sm mb-md">
+<h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="gavel">gavel</span> Criminal Record Checks
+                            </h2>
+<span class="status-badge status-clear">Clear</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-y border-outline-variant">
+<th class="py-sm px-sm font-label-md text-label-md text-secondary">JURISDICTION</th>
+<th class="py-sm px-sm font-label-md text-label-md text-secondary">SEARCH TYPE</th>
+<th class="py-sm px-sm font-label-md text-label-md text-secondary">DATE COMPLETED</th>
+<th class="py-sm px-sm font-label-md text-label-md text-secondary">RESULT</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-outline-variant hover:bg-surface-bright transition-colors">
+<td class="py-sm px-sm font-body-md text-body-md text-on-surface">National Criminal Database</td>
+<td class="py-sm px-sm font-mono-label text-mono-label text-secondary">Multi-State</td>
+<td class="py-sm px-sm font-mono-label text-mono-label text-on-surface">Oct 25, 2024</td>
+<td class="py-sm px-sm"><span class="status-badge status-clear">No Records Found</span></td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-bright transition-colors">
+<td class="py-sm px-sm font-body-md text-body-md text-on-surface">Federal Courthouse Search</td>
+<td class="py-sm px-sm font-mono-label text-mono-label text-secondary">Federal</td>
+<td class="py-sm px-sm font-mono-label text-mono-label text-on-surface">Oct 26, 2024</td>
+<td class="py-sm px-sm"><span class="status-badge status-clear">No Records Found</span></td>
+</tr>
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-sm px-sm font-body-md text-body-md text-on-surface">Global Watchlist</td>
+<td class="py-sm px-sm font-mono-label text-mono-label text-secondary">Sanctions/OFAC</td>
+<td class="py-sm px-sm font-mono-label text-mono-label text-on-surface">Oct 25, 2024</td>
+<td class="py-sm px-sm"><span class="status-badge status-clear">Clear</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right Column: Employment & Notes (4 cols) -->
+<div class="md:col-span-4 flex flex-col gap-md">
+<!-- Employment History -->
+<div class="bg-surface border border-outline-variant rounded-lg p-lg shadow-[0px_1px_2px_rgba(0,0,0,0.05)] h-full">
+<div class="flex justify-between items-center border-b border-outline-variant pb-sm mb-md">
+<h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="work">work</span> Employment
+                            </h2>
+<span class="status-badge status-pending">Pending</span>
+</div>
+<div class="flex flex-col gap-lg relative">
+<!-- Timeline line -->
+<div class="absolute left-3 top-2 bottom-2 w-0.5 bg-outline-variant z-0"></div>
+<!-- Item 1 -->
+<div class="relative z-10 flex gap-md">
+<div class="w-6 h-6 rounded-full bg-[#166534] border-2 border-surface flex items-center justify-center flex-shrink-0 mt-1">
+<span class="material-symbols-outlined text-on-primary text-[12px]" data-icon="check">check</span>
+</div>
+<div>
+<div class="font-body-md text-body-md font-bold text-on-surface">TechFlow Innovations</div>
+<div class="font-label-md text-label-md text-secondary">Software Engineer • 2019 - 2023</div>
+<div class="mt-xs text-xs text-on-surface-variant bg-surface-container-low p-xs rounded border border-outline-variant inline-block">Verified via Equifax The Work Number</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="relative z-10 flex gap-md">
+<div class="w-6 h-6 rounded-full bg-[#fef08a] border-2 border-surface flex items-center justify-center flex-shrink-0 mt-1">
+<span class="material-symbols-outlined text-[#854d0e] text-[12px]" data-icon="pending">pending</span>
+</div>
+<div>
+<div class="font-body-md text-body-md font-bold text-on-surface">Apex Systems Inc.</div>
+<div class="font-label-md text-label-md text-secondary">Junior Dev • 2017 - 2019</div>
+<div class="mt-xs text-xs text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="mail">mail</span> 2nd Notice Sent (Oct 26)
+                                    </div>
+<button class="mt-sm text-xs font-mono-label border border-outline-variant px-2 py-1 rounded hover:bg-surface-container-low">Manual Override</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="h-xl"></div> <!-- spacer -->
+</div>
+</main>
+</body></html>

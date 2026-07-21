@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build
+.next/
+dist/
+out/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+
+# Coverage
+coverage/
+
+# Turbopack
+.turbo/
+
+# Package managers
+pnpm-debug.log*
+npm-debug.log*
+yarn-error.log*

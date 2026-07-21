@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Command Center | Project Nova</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ffb596",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#283044",
+                        "inverse-primary": "#b4c5ff",
+                        "outline-variant": "#c3c6d7",
+                        "surface-tint": "#0053db",
+                        "on-surface-variant": "#434655",
+                        "surface": "#faf8ff",
+                        "primary-fixed": "#dbe1ff",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "on-tertiary-container": "#ffede6",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-surface": "#131b2e",
+                        "background": "#faf8ff",
+                        "on-primary-container": "#eeefff",
+                        "surface-container": "#eaedff",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f2f3ff",
+                        "primary": "#004ac6",
+                        "on-secondary-fixed": "#0b1c30",
+                        "outline": "#737686",
+                        "primary-container": "#2563eb",
+                        "on-background": "#131b2e",
+                        "tertiary-fixed": "#ffdbcd",
+                        "on-tertiary-fixed": "#360f00",
+                        "on-secondary-container": "#54647a",
+                        "surface-dim": "#d2d9f4",
+                        "tertiary": "#943700",
+                        "secondary": "#505f76",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-variant": "#dae2fd",
+                        "tertiary-container": "#bc4800",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "secondary-container": "#d0e1fb",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#e2e7ff",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#dae2fd",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#eef0ff",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-primary-fixed": "#00174b",
+                        "surface-bright": "#faf8ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "xs": "4px",
+                        "xl": "40px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "mono-label": ["JetBrains Mono"],
+                        "title-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "mono-label": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "title-lg": ["18px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #faf8ff; }
+        .soft-shadow { box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05), 0px 4px 6px -1px rgba(0, 0, 0, 0.02); }
+    </style>
+</head>
+<body class="text-on-background font-body-lg flex">
+<!-- SideNavBar (md and up) -->
+<nav class="hidden md:flex flex-col w-64 h-full fixed left-0 top-0 py-md px-base bg-surface-container-low dark:bg-surface-container border-r border-outline-variant dark:border-outline z-40">
+<div class="mb-lg px-md pt-sm">
+<h1 class="font-headline-sm text-headline-sm font-black text-primary dark:text-primary-fixed-dim">Project Nova</h1>
+<p class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant mt-xs">Verification Suite</p>
+</div>
+<button class="mx-md mb-lg h-[40px] bg-primary-container text-on-primary rounded font-label-md text-label-md flex items-center justify-center gap-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">add</span>
+            Generate Report
+        </button>
+<div class="flex-1 overflow-y-auto">
+<ul class="flex flex-col gap-xs px-sm">
+<!-- Active Item -->
+<li>
+<a class="flex items-center gap-md px-md py-sm bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-lg font-bold font-label-md text-label-md scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                        Overview
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+                        Identity Checks
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">gavel</span>
+                        Criminal Records
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">work</span>
+                        Employment
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">school</span>
+                        Education
+                    </a>
+</li>
+</ul>
+</div>
+<div class="mt-auto pt-md border-t border-outline-variant/30">
+<ul class="flex flex-col gap-xs px-sm">
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">help</span>
+                        Support
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">policy</span>
+                        Legal
+                    </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-64 min-h-screen">
+<!-- TopNavBar (md and up only, as per TopAppBar guidelines if side nav exists usually top app bar handles different things, but keeping TopNavBar as requested) -->
+<header class="hidden md:flex justify-between items-center px-lg h-16 w-full sticky top-0 z-50 bg-surface dark:bg-on-surface border-b border-outline-variant dark:border-outline">
+<div class="flex items-center gap-lg">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">Nova Enterprise</span>
+<!-- Navigation Links for Top Bar -->
+<nav class="ml-xl">
+<ul class="flex gap-lg">
+<li>
+<a class="font-body-md text-body-md text-primary dark:text-primary-fixed-dim border-b-2 border-primary dark:border-primary-fixed-dim pb-1 font-bold opacity-80 transition-opacity" href="#">Dashboard</a>
+</li>
+<li>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Verifications</a>
+</li>
+<li>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Analytics</a>
+</li>
+<li>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Compliance</a>
+</li>
+</ul>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="h-[32px] pl-[32px] pr-sm text-body-md bg-surface border border-outline-variant rounded focus:border-primary focus:ring-0 w-64 transition-colors" placeholder="Search..." type="text"/>
+</div>
+<button class="h-[32px] px-md bg-primary-container text-on-primary rounded font-label-md text-label-md">New Request</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a corporate HR executive, crisp lighting, neutral grey background, high resolution, corporate attire. The image is clean, brightly lit, and conveys trust and authority suitable for a modern SaaS platform profile picture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXkVlEb225P2D_4IPwIlrT1PrU4-QdGD2j6XVmWGl57X7E7UBnUW9EVevWF7CpAJoNgXQWhepHMdVnPwl2CGlw8dU3V4e26iIn0dFNvwyG5nEFdNra-l9t6aQ92kDwA3wjUacoX5bffj809zbaaVsXmOsS9fh3aD_0MTA1uo7RpQow_QRKmfCOy3ldO-XS20GsJgZ9SbCLfZtFdSJMtfgLkEOx37vV2a1NzNCb-LvWeDBuMN_ZPUxI"/>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-md md:p-lg lg:p-xl max-w-container-max mx-auto w-full">
+<div class="mb-lg flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background">Command Center</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">Real-time overview of verification operations.</p>
+</div>
+<div class="flex items-center gap-sm text-label-md font-label-md text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+                    Live Updates Active
+                </div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-lg">
+<!-- Pulse Section (Top row, spans 12 cols on mobile, 8 on desktop) -->
+<section class="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-md">
+<!-- Metric 1 -->
+<div class="bg-surface border border-outline-variant rounded-lg p-lg soft-shadow flex flex-col justify-between">
+<div class="flex justify-between items-start mb-md">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Total Active</span>
+<span class="material-symbols-outlined text-outline">group</span>
+</div>
+<div>
+<span class="font-display text-display text-on-background">1,248</span>
+<div class="flex items-center gap-xs text-primary-container font-label-md text-label-md mt-sm">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+                                +12% this week
+                            </div>
+</div>
+</div>
+<!-- Metric 2 -->
+<div class="bg-surface border border-outline-variant rounded-lg p-lg soft-shadow flex flex-col justify-between">
+<div class="flex justify-between items-start mb-md">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Pending Review</span>
+<span class="material-symbols-outlined text-outline">hourglass_empty</span>
+</div>
+<div>
+<span class="font-display text-display text-on-background">342</span>
+<div class="flex items-center gap-xs text-on-surface-variant font-label-md text-label-md mt-sm">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                Avg wait: 2.4 days
+                            </div>
+</div>
+</div>
+<!-- Metric 3 -->
+<div class="bg-error-container border border-error/20 rounded-lg p-lg soft-shadow flex flex-col justify-between relative overflow-hidden">
+<div class="absolute -right-4 -top-4 opacity-10">
+<span class="material-symbols-outlined text-[120px] text-error">warning</span>
+</div>
+<div class="flex justify-between items-start mb-md relative z-10">
+<span class="font-label-md text-label-md text-on-error-container uppercase tracking-wider font-bold">Critical Flags</span>
+<span class="material-symbols-outlined text-on-error-container">flag</span>
+</div>
+<div class="relative z-10">
+<span class="font-display text-display text-on-error-container">18</span>
+<div class="flex items-center gap-xs text-on-error-container font-label-md text-label-md mt-sm">
+<span class="material-symbols-outlined text-[16px]">priority_high</span>
+                                Requires immediate attention
+                            </div>
+</div>
+</div>
+</section>
+<!-- Priority Actions (Spans 4 cols on desktop) -->
+<section class="md:col-span-4 bg-surface border border-outline-variant rounded-lg soft-shadow flex flex-col">
+<div class="p-md border-b border-outline-variant/50 flex justify-between items-center bg-surface-container-low">
+<h3 class="font-title-lg text-title-lg text-on-background">Priority Actions</h3>
+<button class="text-primary hover:text-primary-container font-label-md text-label-md transition-colors">View All</button>
+</div>
+<div class="p-sm flex-1 overflow-y-auto">
+<ul class="flex flex-col gap-xs">
+<li class="p-sm hover:bg-surface-container-low rounded transition-colors border border-transparent hover:border-outline-variant/30 flex justify-between items-start cursor-pointer">
+<div>
+<p class="font-label-md text-label-md font-bold text-on-background">SAR-992: Discrepancy Found</p>
+<p class="font-body-md text-[13px] text-on-surface-variant mt-xs">Employment dates mismatch for candidate J. Doe.</p>
+</div>
+<span class="material-symbols-outlined text-error text-[20px]">error</span>
+</li>
+<li class="p-sm hover:bg-surface-container-low rounded transition-colors border border-transparent hover:border-outline-variant/30 flex justify-between items-start cursor-pointer">
+<div>
+<p class="font-label-md text-label-md font-bold text-on-background">API Key Expiration</p>
+<p class="font-body-md text-[13px] text-on-surface-variant mt-xs">Production key expires in 3 days.</p>
+</div>
+<span class="material-symbols-outlined text-tertiary text-[20px]">warning</span>
+</li>
+<li class="p-sm hover:bg-surface-container-low rounded transition-colors border border-transparent hover:border-outline-variant/30 flex justify-between items-start cursor-pointer">
+<div>
+<p class="font-label-md text-label-md font-bold text-on-background">Batch Upload Failed</p>
+<p class="font-body-md text-[13px] text-on-surface-variant mt-xs">Row 42 contains malformed SSN data.</p>
+</div>
+<span class="material-symbols-outlined text-error text-[20px]">error</span>
+</li>
+</ul>
+</div>
+</section>
+<!-- Recent Activity Feed (Bottom row, spans full 12 cols) -->
+<section class="md:col-span-12 bg-surface border border-outline-variant rounded-lg soft-shadow overflow-hidden">
+<div class="p-md border-b border-outline-variant/50 bg-surface-container-low flex justify-between items-center">
+<h3 class="font-title-lg text-title-lg text-on-background">Recent Activity</h3>
+<div class="flex gap-sm">
+<button class="h-[32px] px-md border border-outline-variant bg-surface text-on-background rounded font-label-md text-label-md hover:bg-surface-container-low transition-colors">Filter</button>
+<button class="h-[32px] px-md border border-outline-variant bg-surface text-on-background rounded font-label-md text-label-md hover:bg-surface-container-low transition-colors">Export</button>
+</div>
+</div>
+<!-- Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant font-medium">Candidate ID</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant font-medium">Name</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant font-medium">Verification Type</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant font-medium">Status</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant font-medium">Timestamp</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant font-medium text-right">Action</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-[13px] text-on-background">
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-low/50 transition-colors">
+<td class="py-sm px-md font-mono-label text-on-surface-variant">CAN-8492</td>
+<td class="py-sm px-md font-medium">Eleanor Shellstrop</td>
+<td class="py-sm px-md">Comprehensive Background</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center gap-xs px-xs py-[2px] rounded-sm bg-surface-container-high text-primary-container font-label-md text-[11px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                                            Cleared
+                                        </span>
+</td>
+<td class="py-sm px-md text-on-surface-variant">10 mins ago</td>
+<td class="py-sm px-md text-right">
+<button class="text-primary hover:underline font-label-md">View Report</button>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-low/50 transition-colors">
+<td class="py-sm px-md font-mono-label text-on-surface-variant">CAN-8493</td>
+<td class="py-sm px-md font-medium">Chidi Anagonye</td>
+<td class="py-sm px-md">Education Verification</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center gap-xs px-xs py-[2px] rounded-sm bg-error-container/30 text-error font-label-md text-[11px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                                            Flagged
+                                        </span>
+</td>
+<td class="py-sm px-md text-on-surface-variant">25 mins ago</td>
+<td class="py-sm px-md text-right">
+<button class="text-primary hover:underline font-label-md">Review Flag</button>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-low/50 transition-colors">
+<td class="py-sm px-md font-mono-label text-on-surface-variant">CAN-8494</td>
+<td class="py-sm px-md font-medium">Tahani Al-Jamil</td>
+<td class="py-sm px-md">Global Watchlist</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center gap-xs px-xs py-[2px] rounded-sm bg-surface-variant text-on-surface-variant font-label-md text-[11px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                                            Pending
+                                        </span>
+</td>
+<td class="py-sm px-md text-on-surface-variant">1 hr ago</td>
+<td class="py-sm px-md text-right">
+<button class="text-primary hover:underline font-label-md">Details</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-sm px-md font-mono-label text-on-surface-variant">CAN-8495</td>
+<td class="py-sm px-md font-medium">Jason Mendoza</td>
+<td class="py-sm px-md">Criminal Record (County)</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center gap-xs px-xs py-[2px] rounded-sm bg-surface-container-high text-primary-container font-label-md text-[11px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                                            Cleared
+                                        </span>
+</td>
+<td class="py-sm px-md text-on-surface-variant">2 hrs ago</td>
+<td class="py-sm px-md text-right">
+<button class="text-primary hover:underline font-label-md">View Report</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+</main>
+</div>
+</body></html>

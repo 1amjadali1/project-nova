@@ -1,0 +1,16 @@
+{
+  "name": "project-nova",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.15.1",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "echo Development environment will be configured in upcoming sprints.",
+    "build": "echo Build pipeline will be configured in upcoming sprints.",
+    "lint": "echo Linting will be configured in upcoming sprints.",
+    "test": "echo Testing will be configured in upcoming sprints."
+  }
+}

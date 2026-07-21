@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Compliance &amp; Audit Hub - Nova Enterprise</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#ffb596",
+                      "on-primary": "#ffffff",
+                      "inverse-surface": "#283044",
+                      "inverse-primary": "#b4c5ff",
+                      "outline-variant": "#c3c6d7",
+                      "surface-tint": "#0053db",
+                      "on-surface-variant": "#434655",
+                      "surface": "#faf8ff",
+                      "primary-fixed": "#dbe1ff",
+                      "on-tertiary-fixed-variant": "#7d2d00",
+                      "on-tertiary-container": "#ffede6",
+                      "secondary-fixed": "#d3e4fe",
+                      "on-surface": "#131b2e",
+                      "background": "#faf8ff",
+                      "on-primary-container": "#eeefff",
+                      "surface-container": "#eaedff",
+                      "on-error": "#ffffff",
+                      "surface-container-low": "#f2f3ff",
+                      "primary": "#004ac6",
+                      "on-secondary-fixed": "#0b1c30",
+                      "outline": "#737686",
+                      "primary-container": "#2563eb",
+                      "on-background": "#131b2e",
+                      "tertiary-fixed": "#ffdbcd",
+                      "on-tertiary-fixed": "#360f00",
+                      "on-secondary-container": "#54647a",
+                      "surface-dim": "#d2d9f4",
+                      "tertiary": "#943700",
+                      "secondary": "#505f76",
+                      "error": "#ba1a1a",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "surface-variant": "#dae2fd",
+                      "tertiary-container": "#bc4800",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "secondary-container": "#d0e1fb",
+                      "on-secondary": "#ffffff",
+                      "surface-container-high": "#e2e7ff",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#dae2fd",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-on-surface": "#eef0ff",
+                      "error-container": "#ffdad6",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "on-primary-fixed": "#00174b",
+                      "surface-bright": "#faf8ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-max": "1280px",
+                      "sm": "8px",
+                      "base": "4px",
+                      "xs": "4px",
+                      "xl": "40px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "mono-label": [
+                              "JetBrains Mono"
+                      ],
+                      "title-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "display": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "mono-label": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "title-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #faf8ff;
+        }
+        .dark body {
+            background-color: #131b2e;
+        }
+        .shadow-soft {
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05), 0px 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased flex">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-low dark:bg-surface-container text-primary dark:text-primary-fixed-dim font-label-md text-label-md h-screen fixed left-0 top-0 py-md px-base flex flex-col w-64 border-r border-outline-variant dark:border-outline z-40 hidden md:flex">
+<div class="mb-lg px-sm">
+<div class="flex items-center gap-sm mb-1">
+<img alt="Nova Logo" class="w-8 h-8 rounded" data-alt="A clean, minimalist logo icon for a software suite, rendered in high contrast white against a dark background, adhering to the Modern SaaS Minimalism aesthetic. The logo implies data flow and verification." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3PcGvYdJ7yhfx9CY81h8Yk8B7lIS82pjFNAJcr_0YlmDI9dwnBElcJ0f8Ojmq6s8UnecLvMFaP7wIbclA6C85De6Y2Adt_QFRo7875sRV3nTmXQMdZKjKDE-VoGjrl7m9zvJbZRpN7unHlSzFq6q1K31XX51A1inbWVrXgxBfsV8fFZ54ZNTKIiYpKvCgc2Qi9H5ByhEAyfWwPPJB6fDRvW7fwqi-HOrwc9yhWonSYmUlhDCiX94K"/>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-black text-primary dark:text-primary-fixed-dim">Project Nova</h1>
+<p class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant">Verification Suite</p>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto">
+<ul class="space-y-1 px-sm">
+<li>
+<a class="flex items-center gap-md py-2 px-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span>Overview</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md py-2 px-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">fingerprint</span>
+<span>Identity Checks</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md py-2 px-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">gavel</span>
+<span>Criminal Records</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md py-2 px-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">work</span>
+<span>Employment</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md py-2 px-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">school</span>
+<span>Education</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="mt-auto px-sm pt-md">
+<button class="w-full bg-primary-container text-on-primary font-label-md text-label-md h-10 rounded mb-md hover:opacity-90 transition-opacity">
+                Generate Report
+            </button>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-md py-2 px-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">help</span>
+<span>Support</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md py-2 px-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">policy</span>
+<span>Legal</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col min-h-screen md:ml-64 w-full">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-on-surface text-primary dark:text-primary-fixed-dim font-body-md text-body-md border-b border-outline-variant dark:border-outline flex justify-between items-center px-lg h-16 w-full sticky top-0 z-50">
+<div class="flex items-center gap-lg">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim hidden md:block">Nova Enterprise</span>
+<span class="material-symbols-outlined md:hidden cursor-pointer" style="font-variation-settings: 'FILL' 0;">menu</span>
+<nav class="hidden md:flex gap-md h-full">
+<a class="h-full flex items-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Dashboard</a>
+<a class="h-full flex items-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Verifications</a>
+<a class="h-full flex items-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Analytics</a>
+<a class="h-full flex items-center text-primary dark:text-primary-fixed-dim border-b-2 border-primary dark:border-primary-fixed-dim font-bold hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Compliance</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="bg-primary-container text-on-primary h-10 px-md rounded font-label-md text-label-md hidden md:block hover:opacity-90 transition-opacity">New Request</button>
+<div class="flex items-center gap-sm text-on-surface-variant dark:text-surface-variant">
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+</div>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover" data-alt="A small, circular avatar image of a professional user, isolated against a subtle gradient background, reflecting a clean, corporate identity within the SaaS platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcHd66D-DuzhSQ2dIDI4woYAkT7gS0cuZIErOIArgYN7tkt_AC4eRf0VfmqwUesshGweK5ZojPihPx3MakXf-sUc6xywfV4mprSAbyumQRzC8_GtWjYg5QI61joww_H6oZIWTeKiLQAKdEyLmqDaT9lQOKtc3X6jD9H9Mpk9L2c1QHXqUQb95wMRWN_mbNwYz-IDAntyxfr0T0QM19iq6nwIz7F2uEQTTfB5FynzvxdLz1lz8K_xOr"/>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-md md:p-lg max-w-container-max mx-auto w-full">
+<div class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<h2 class="font-display text-display text-on-background mb-sm">Compliance &amp; Audit</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">System-wide security settings, data retention policies, and immutable audit logs.</p>
+</div>
+<div class="flex gap-sm">
+<button class="h-10 px-md rounded bg-surface border border-outline-variant text-on-surface font-label-md text-label-md hover:bg-surface-variant transition-colors flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                        Export Logs
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-md md:gap-lg mb-lg">
+<!-- GDPR Status Card -->
+<div class="md:col-span-4 bg-surface dark:bg-surface-container-low border border-outline-variant dark:border-outline rounded-lg p-lg shadow-soft flex flex-col">
+<div class="flex justify-between items-start mb-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">shield_locked</span>
+<h3 class="font-title-lg text-title-lg text-on-surface">GDPR Status</h3>
+</div>
+<span class="bg-primary-container/10 text-primary-container px-2 py-1 rounded font-mono-label text-mono-label">COMPLIANT</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-lg flex-1">All data processing agreements are up to date. Automated right-to-be-forgotten requests are active.</p>
+<div class="space-y-sm">
+<div class="flex justify-between items-center text-sm">
+<span class="font-label-md text-label-md text-on-surface-variant">Last Audit</span>
+<span class="font-mono-label text-mono-label text-on-surface">2023-10-24</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="font-label-md text-label-md text-on-surface-variant">DPA Version</span>
+<span class="font-mono-label text-mono-label text-on-surface">v2.1.4</span>
+</div>
+</div>
+</div>
+<!-- Data Retention Card -->
+<div class="md:col-span-8 bg-surface dark:bg-surface-container-low border border-outline-variant dark:border-outline rounded-lg p-lg shadow-soft">
+<div class="flex items-center gap-sm mb-md">
+<span class="material-symbols-outlined text-tertiary-container" style="font-variation-settings: 'FILL' 1;">database</span>
+<h3 class="font-title-lg text-title-lg text-on-surface">Data Retention Policy</h3>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-md mt-md">
+<div class="border border-outline-variant dark:border-outline rounded p-md bg-surface-bright dark:bg-on-surface">
+<div class="font-label-md text-label-md text-on-surface-variant mb-xs">Verification Reports</div>
+<div class="font-headline-md text-headline-md text-on-surface">7 Years</div>
+<div class="font-label-md text-label-md text-primary mt-sm flex items-center gap-1 cursor-pointer">Modify <span class="material-symbols-outlined text-[14px]">edit</span></div>
+</div>
+<div class="border border-outline-variant dark:border-outline rounded p-md bg-surface-bright dark:bg-on-surface">
+<div class="font-label-md text-label-md text-on-surface-variant mb-xs">Audit Logs</div>
+<div class="font-headline-md text-headline-md text-on-surface">3 Years</div>
+<div class="font-label-md text-label-md text-primary mt-sm flex items-center gap-1 cursor-pointer">Modify <span class="material-symbols-outlined text-[14px]">edit</span></div>
+</div>
+<div class="border border-outline-variant dark:border-outline rounded p-md bg-surface-bright dark:bg-on-surface">
+<div class="font-label-md text-label-md text-on-surface-variant mb-xs">User Metadata</div>
+<div class="font-headline-md text-headline-md text-on-surface">90 Days</div>
+<div class="font-label-md text-label-md text-primary mt-sm flex items-center gap-1 cursor-pointer">Modify <span class="material-symbols-outlined text-[14px]">edit</span></div>
+</div>
+</div>
+</div>
+<!-- Security Overview (Visual) -->
+<div class="md:col-span-12 h-64 border border-outline-variant dark:border-outline rounded-lg overflow-hidden relative shadow-soft bg-surface dark:bg-surface-container-low">
+<div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
+<div class="bg-cover bg-center w-full h-full" data-alt="A highly abstract, dark, technical network graph visualization implying secure data connections and encrypted pathways. The image uses sharp lines and subtle blue and white glowing nodes against a deep slate background, matching the Modern SaaS Minimalism aesthetic. It represents cybersecurity and audit trails." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDSeFVn4fheQUu1xyuSTtuiC8WXyB_1rAtx0SzSyXLuqtZvxZPdZ2UfedwMKwND6wh2KTlhF7O76GjArpCWjoeMPrAaHIcuKYhBN59Z4OBXEA2mascTQEmeV-n6hQa3QNfKdtwYIeA0yGCxuPMYwwUZPGylnlbgLe55TBLtXHUh0i3BjV2x_QIDJasd1AGPhQmxNkMZaXWD2axRrKFDQjJdeZodVb2AtLtOZ8UdPVqAClGUosY7tBDF')"></div>
+</div>
+<div class="relative z-10 p-lg h-full flex flex-col justify-center">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-sm">Encryption Standard</h3>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl mb-md">All data at rest is encrypted using AES-256. Data in transit is secured via TLS 1.3. Key management is handled through AWS KMS with strict role-based access controls.</p>
+<div class="flex gap-md">
+<div class="flex items-center gap-xs font-mono-label text-mono-label bg-surface-variant dark:bg-surface-dim px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[16px] text-green-600">check_circle</span>
+                                AES-256 Active
+                            </div>
+<div class="flex items-center gap-xs font-mono-label text-mono-label bg-surface-variant dark:bg-surface-dim px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[16px] text-green-600">check_circle</span>
+                                TLS 1.3 Enforced
+                            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Audit Log Table -->
+<div class="bg-surface dark:bg-surface-container-low border border-outline-variant dark:border-outline rounded-lg shadow-soft overflow-hidden">
+<div class="p-md border-b border-outline-variant dark:border-outline bg-surface-bright dark:bg-surface-container flex justify-between items-center">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant">list_alt</span>
+<h3 class="font-title-lg text-title-lg text-on-surface">System Audit Log</h3>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="h-8 pl-8 pr-3 text-sm bg-surface border border-outline-variant rounded focus:border-primary-container focus:ring-0 w-64 text-on-surface placeholder-on-surface-variant font-body-md" placeholder="Search events..." type="text"/>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low dark:bg-surface-dim border-b border-outline-variant dark:border-outline font-label-md text-label-md text-on-surface-variant">
+<th class="py-3 px-md font-medium">Timestamp (UTC)</th>
+<th class="py-3 px-md font-medium">Actor</th>
+<th class="py-3 px-md font-medium">Event</th>
+<th class="py-3 px-md font-medium">Resource</th>
+<th class="py-3 px-md font-medium">IP Address</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface">
+<tr class="border-b border-outline-variant dark:border-outline hover:bg-surface-bright dark:hover:bg-surface-container transition-colors">
+<td class="py-3 px-md font-mono-label">2023-10-25 14:32:01</td>
+<td class="py-3 px-md flex items-center gap-xs">
+<span class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-label-md text-[10px]">JD</span>
+                                    john.doe@example.com
+                                </td>
+<td class="py-3 px-md"><span class="bg-surface-variant px-2 py-0.5 rounded text-xs">REPORT_GENERATED</span></td>
+<td class="py-3 px-md font-mono-label text-xs">req_892a4bc</td>
+<td class="py-3 px-md font-mono-label text-xs text-on-surface-variant">192.168.1.45</td>
+</tr>
+<tr class="border-b border-outline-variant dark:border-outline hover:bg-surface-bright dark:hover:bg-surface-container transition-colors">
+<td class="py-3 px-md font-mono-label">2023-10-25 14:15:22</td>
+<td class="py-3 px-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">smart_toy</span>
+                                    System API
+                                </td>
+<td class="py-3 px-md"><span class="bg-surface-variant px-2 py-0.5 rounded text-xs">DATA_PURGED</span></td>
+<td class="py-3 px-md font-mono-label text-xs">user_retention_job</td>
+<td class="py-3 px-md font-mono-label text-xs text-on-surface-variant">internal</td>
+</tr>
+<tr class="border-b border-outline-variant dark:border-outline hover:bg-surface-bright dark:hover:bg-surface-container transition-colors">
+<td class="py-3 px-md font-mono-label">2023-10-25 13:05:44</td>
+<td class="py-3 px-md flex items-center gap-xs">
+<span class="w-6 h-6 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-label-md text-[10px]">AS</span>
+                                    admin.smith@nova.com
+                                </td>
+<td class="py-3 px-md"><span class="bg-error-container text-on-error-container px-2 py-0.5 rounded text-xs">POLICY_UPDATED</span></td>
+<td class="py-3 px-md font-mono-label text-xs">retention_rules</td>
+<td class="py-3 px-md font-mono-label text-xs text-on-surface-variant">203.0.113.89</td>
+</tr>
+<tr class="border-b border-outline-variant dark:border-outline hover:bg-surface-bright dark:hover:bg-surface-container transition-colors">
+<td class="py-3 px-md font-mono-label">2023-10-25 11:45:10</td>
+<td class="py-3 px-md flex items-center gap-xs">
+<span class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-label-md text-[10px]">JD</span>
+                                    john.doe@example.com
+                                </td>
+<td class="py-3 px-md"><span class="bg-surface-variant px-2 py-0.5 rounded text-xs">LOGIN_SUCCESS</span></td>
+<td class="py-3 px-md font-mono-label text-xs">session_init</td>
+<td class="py-3 px-md font-mono-label text-xs text-on-surface-variant">192.168.1.45</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-md flex justify-between items-center bg-surface-bright dark:bg-surface-container text-sm">
+<span class="text-on-surface-variant font-label-md">Showing 1-4 of 12,492 events</span>
+<div class="flex gap-2">
+<button class="px-2 py-1 border border-outline-variant rounded text-on-surface-variant hover:bg-surface-variant disabled:opacity-50" disabled="">&lt; Prev</button>
+<button class="px-2 py-1 border border-outline-variant rounded text-on-surface-variant hover:bg-surface-variant">Next &gt;</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-on-surface text-primary dark:text-primary-fixed-dim font-label-md text-label-md border-t border-outline-variant dark:border-outline w-full py-lg px-xl flex flex-col md:flex-row justify-between items-center gap-md max-w-container-max mx-auto mt-auto">
+<div class="font-title-lg text-title-lg font-bold text-on-surface dark:text-inverse-on-surface">Nova Enterprise</div>
+<nav class="flex flex-wrap justify-center md:justify-end gap-md">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors" href="#">Terms of Service</a>
+<a class="text-primary dark:text-primary-fixed-dim underline opacity-70" href="#">Security Compliance</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors" href="#">GDPR Status</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors" href="#">API Documentation</a>
+</nav>
+<div class="text-on-surface-variant dark:text-surface-variant text-center md:text-right mt-md md:mt-0 w-full md:w-auto">
+                © 2024 Nova Verification Systems. All rights reserved.
+            </div>
+</footer>
+</div>
+</body></html>

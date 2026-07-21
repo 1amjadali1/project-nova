@@ -1,0 +1,69 @@
+Marketing Site
+
+01 Home
+02 Features
+03 Industries
+04 Pricing
+05 About
+06 Contact
+07 Request Demo
+08 Login
+
+----------------------------
+
+Client Workspace
+
+01 Dashboard
+02 Verification Cases
+03 Create Verification
+04 Case Details
+05 Reports
+06 Team
+07 Notifications
+08 Settings
+
+----------------------------
+
+Operations Workspace
+
+01 Dashboard
+02 My Cases
+03 Case Details
+04 Verification Workspace
+05 Document Review
+06 Notes
+07 Submit for QA
+
+----------------------------
+
+Operations Team Leader Workspace
+
+01 Dashboard
+02 Team Cases
+03 Assign Cases
+04 QA Review
+05 SLA Monitor
+
+----------------------------
+
+Operations Manager Workspace
+
+01 Dashboard
+02 Analytics
+03 Team Performance
+04 Escalations
+05 Reports
+
+----------------------------
+
+Platform Administration
+
+01 Dashboard
+02 Companies
+03 Users
+04 Roles
+05 Permissions
+06 Verification Packages
+07 API Vendors
+08 Audit Logs
+09 Platform Settings

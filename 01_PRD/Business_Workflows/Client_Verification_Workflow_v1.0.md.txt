@@ -1,0 +1,415 @@
+Paste the following
+Client Verification Workflow v1.0
+Purpose
+
+This document defines the complete lifecycle of a background verification case inside Project Nova, from the moment a client creates a verification request until the final report is delivered.
+
+Actors
+Client
+
+Creates verification requests.
+
+Uploads candidate documents.
+
+Tracks verification progress.
+
+Downloads reports.
+
+Operations Executive
+
+Reviews documents.
+
+Performs manual verification.
+
+Initiates external verification requests.
+
+Updates verification status.
+
+Team Leader
+
+Assigns verification cases.
+
+Reviews completed checks.
+
+Performs quality assurance.
+
+Approves or returns cases.
+
+Operations Manager
+
+Monitors SLA.
+
+Views analytics.
+
+Handles escalations.
+
+Approves exceptional cases.
+
+System
+
+Creates case IDs.
+
+Stores documents securely.
+
+Maintains audit logs.
+
+Triggers notifications.
+
+Calculates SLA timers.
+
+Generates reports.
+
+Records every activity.
+
+Workflow
+Step 1
+
+Client Login
+
+↓
+
+Dashboard
+
+↓
+
+Clicks
+
+New Verification
+
+Step 2
+
+System creates
+
+Draft Verification Case
+
+Status
+
+Draft
+
+Step 3
+
+Client enters
+
+Candidate Information
+
+Required
+
+Full Name
+Email
+Mobile
+DOB (optional)
+Employee ID (optional)
+Step 4
+
+Client selects
+
+Verification Package
+
+Example
+
+Basic
+
+Standard
+
+Premium
+
+Custom
+
+Step 5
+
+Client uploads documents
+
+Example
+
+Resume
+
+PAN
+
+Aadhaar
+
+Education Certificates
+
+Experience Letters
+
+Address Proof
+
+Passport
+
+Driving License
+
+Any additional documents
+
+Step 6
+
+Client submits case
+
+System validates
+
+Mandatory fields
+
+Documents
+
+Package
+
+Consent declaration
+
+Step 7
+
+Status changes
+
+Submitted
+
+↓
+
+Operations Queue
+
+Step 8
+
+Operations Executive receives case
+
+Reviews
+
+Documents
+
+Package
+
+Data quality
+
+Missing information
+
+Step 9
+
+If documents missing
+
+Status
+
+Pending Client Action
+
+Client notified.
+
+Step 10
+
+If documents complete
+
+Executive starts verification.
+
+Each verification module starts independently.
+
+Example
+
+Identity
+
+Employment
+
+Education
+
+Address
+
+Court
+
+Reference
+
+Bank
+
+Step 11
+
+Each module has its own status.
+
+Not Started
+
+In Progress
+
+Pending
+
+Completed
+
+Failed
+
+Unable to Verify
+
+Step 12
+
+Executive enters remarks.
+
+Evidence.
+
+Attachments.
+
+Internal notes.
+
+Step 13
+
+Once every module completes
+
+Case moves to
+
+QA Review
+
+Step 14
+
+Team Leader reviews
+
+Evidence
+
+Remarks
+
+Flags
+
+Quality
+
+Step 15
+
+If rejected
+
+Returns to Executive
+
+Reason mandatory.
+
+Step 16
+
+If approved
+
+Generate Final Report
+
+PDF
+
+Audit Summary
+
+Verification Summary
+
+Risk Summary
+
+Step 17
+
+Status
+
+Completed
+
+Step 18
+
+Client notified.
+
+Email
+
+Dashboard Notification
+
+Step 19
+
+Client downloads report.
+
+Step 20
+
+Case archived.
+
+Audit logs retained.
+
+Case Status Flow
+
+Draft
+
+↓
+
+Submitted
+
+↓
+
+Assigned
+
+↓
+
+In Verification
+
+↓
+
+Pending Client
+
+↓
+
+QA Review
+
+↓
+
+Completed
+
+↓
+
+Archived
+
+Future Statuses
+
+Cancelled
+
+Rejected
+
+Escalated
+
+On Hold
+
+Reopened
+
+Audit Log
+
+Every action must record
+
+Timestamp
+
+User
+
+Role
+
+IP Address
+
+Action
+
+Previous Value
+
+New Value
+
+Notifications
+
+Client
+
+Operations
+
+Team Leader
+
+Manager
+
+All notifications should be stored permanently.
+
+Security
+
+Every document must remain encrypted.
+
+Every download logged.
+
+Every edit audited.
+
+No record should ever be permanently deleted.
+
+Soft delete only.
+
+Document Version
+
+v1.0
+
+Status
+
+Approved
+
+🧠 CTO Explanation
+
+This document is not just a workflow.
+
+It defines:
+
+Database entities
+API endpoints
+Permissions
+Audit logs
+Notifications
+AI trigger points
+Report generation
+Dashboard widgets
+
+One document influences almost every technical layer.

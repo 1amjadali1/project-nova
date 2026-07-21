@@ -1,0 +1,17 @@
+PN-WEB-001
+
+Status:
+MVP Approved
+
+Date:
+19 July 2026
+
+Changes:
+- Hero Improved
+- Security Section Added
+- Workflow Added
+
+Future Improvements:
+- Better Dashboard Mockup
+- Stronger Footer
+- KPI Section
