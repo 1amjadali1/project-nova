@@ -1,5 +1,6 @@
 # Project Nova
 
+<<<<<<< HEAD
 > Enterprise Background Verification Platform for Modern Businesses
 
 ---
@@ -161,3 +162,42 @@ Private Project
 Copyright © Project Nova
 
 All Rights Reserved.
+=======
+Enterprise AI-Powered Background Verification Platform.
+
+## Status
+
+Architecture Phase: ✅ Completed
+
+Engineering Phase: 🚧 In Progress
+
+## Technology Stack
+
+- Next.js
+- NestJS
+- PostgreSQL
+- Prisma
+- TypeScript
+- Supabase
+- Gemini AI
+
+## Project Structure
+
+Documentation First
+
+Implementation Second
+
+Quality Always
+
+## Engineering Principles
+
+API First
+
+Security First
+
+AI Assisted
+
+Audit Ready
+
+Enterprise Grade
+>>>>>>> 5435fd0211a00573365b5d0ac95919871de3f71f
