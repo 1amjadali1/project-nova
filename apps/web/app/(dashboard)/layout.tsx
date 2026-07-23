@@ -1,19 +1,26 @@
-import "./globals.css";
-import type { Metadata } from "next";
+import Sidebar from "@/components/dashboard/Sidebar";
+import Topbar from "@/components/dashboard/Topbar";
 
-export const metadata: Metadata = {
-  title: "Project Nova",
-  description: "Enterprise Background Verification Platform",
-};
-
-export default function RootLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
+    <div className="flex min-h-screen bg-slate-950">
+
+      <Sidebar />
+
+      <div className="flex flex-1 flex-col">
+
+        <Topbar />
+
+        <main className="flex-1 p-8 text-white">
+          {children}
+        </main>
+
+      </div>
+
+    </div>
   );
 }
