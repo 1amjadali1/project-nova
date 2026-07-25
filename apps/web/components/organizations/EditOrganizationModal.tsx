@@ -73,62 +73,96 @@ export default function EditOrganizationModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-      <div className="relative w-full max-w-2xl rounded-2xl bg-slate-900 p-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-2xl rounded-2xl border border-slate-700 bg-slate-900 p-8 shadow-2xl">
         
         {toastMessage && (
-          <div className={`absolute left-1/2 top-4 -translate-x-1/2 rounded-lg px-4 py-2 text-sm font-medium ${toastMessage.type === 'success' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+          <div 
+            role="alert"
+            aria-live="polite"
+            className={`absolute left-1/2 top-4 flex -translate-x-1/2 items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium shadow-lg transition-all ${toastMessage.type === 'success' ? 'bg-green-500/20 text-green-400 ring-1 ring-green-500/50' : 'bg-red-500/20 text-red-400 ring-1 ring-red-500/50'}`}
+          >
+            {toastMessage.type === 'success' ? (
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+            ) : (
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            )}
             {toastMessage.text}
           </div>
         )}
 
-        <h2 className="mb-6 text-2xl font-bold">
+        <h2 className="mb-6 text-2xl font-bold text-white">
           Edit Organization
         </h2>
 
         <form action={handleSubmit}>
-          <div className="grid gap-4">
-            <input
-              name="name"
-              placeholder="Organization Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-950 p-3"
-              required
-            />
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="col-span-2 sm:col-span-1">
+              <label htmlFor="edit-name" className="mb-2 block text-sm font-medium text-slate-300">Organization Name *</label>
+              <input
+                id="edit-name"
+                name="name"
+                placeholder="Acme Corp"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                required
+                aria-required="true"
+              />
+            </div>
 
-            <input
-              name="slug"
-              placeholder="Slug"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-950 p-3"
-              required
-            />
+            <div className="col-span-2 sm:col-span-1">
+              <label htmlFor="edit-slug" className="mb-2 block text-sm font-medium text-slate-300">Slug *</label>
+              <input
+                id="edit-slug"
+                name="slug"
+                placeholder="acme-corp"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                className="w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                required
+                aria-required="true"
+              />
+            </div>
 
-            <input
-              name="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-950 p-3"
-            />
+            <div className="col-span-2 sm:col-span-1">
+              <label htmlFor="edit-email" className="mb-2 block text-sm font-medium text-slate-300">Email Address</label>
+              <input
+                id="edit-email"
+                type="email"
+                name="email"
+                placeholder="contact@acme.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              />
+            </div>
 
-            <input
-              name="phone"
-              placeholder="Phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-950 p-3"
-            />
+            <div className="col-span-2 sm:col-span-1">
+              <label htmlFor="edit-phone" className="mb-2 block text-sm font-medium text-slate-300">Phone Number</label>
+              <input
+                id="edit-phone"
+                type="tel"
+                name="phone"
+                placeholder="+1 555 123 4567"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              />
+            </div>
 
-            <input
-              name="website"
-              placeholder="Website"
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-950 p-3"
-            />
+            <div className="col-span-2">
+              <label htmlFor="edit-website" className="mb-2 block text-sm font-medium text-slate-300">Website URL</label>
+              <input
+                id="edit-website"
+                type="url"
+                name="website"
+                placeholder="https://acme.com"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                className="w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              />
+            </div>
           </div>
 
           <div className="mt-8 flex justify-end gap-3">
