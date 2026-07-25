@@ -27,6 +27,18 @@ export async function createOrganization(formData: FormData) {
   revalidatePath("/organizations");
 }
 
+export async function deleteOrganization(id: string) {
+  if (!id) {
+    throw new Error("Organization ID is required.");
+  }
+
+  await prisma.organization.delete({
+    where: { id },
+  });
+
+  revalidatePath("/organizations");
+}
+
 export async function updateOrganization(id: string, formData: FormData) {
   const name = formData.get("name")?.toString().trim() ?? "";
   const slug = formData.get("slug")?.toString().trim() ?? "";

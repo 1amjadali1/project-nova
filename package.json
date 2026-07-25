@@ -8,9 +8,9 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "echo Development environment will be configured in upcoming sprints.",
-    "build": "echo Build pipeline will be configured in upcoming sprints.",
-    "lint": "echo Linting will be configured in upcoming sprints.",
-    "test": "echo Testing will be configured in upcoming sprints."
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "start": "pnpm --filter web start",
+    "lint": "pnpm --filter web lint"
   }
 }

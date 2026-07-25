@@ -40,7 +40,7 @@ export default function OrganizationTable({
                 colSpan={6}
                 className="py-10 text-center text-slate-400"
               >
-                No organizations found.
+                No matching organizations found.
               </td>
             </tr>
           ) : (
