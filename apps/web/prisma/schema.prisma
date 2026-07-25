@@ -21,4 +21,36 @@ model Organization {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  candidates Candidate[]
+}
+
+model Candidate {
+  id             String       @id @default(cuid())
+  firstName      String
+  lastName       String
+  email          String       @unique
+  phone          String?
+  isActive       Boolean      @default(true)
+  
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  verifications  VerificationRequest[]
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model VerificationRequest {
+  id          String    @id @default(cuid())
+  type        String    // e.g. "CRIMINAL_RECORD", "EMPLOYMENT", "EDUCATION"
+  status      String    @default("PENDING") // e.g. "PENDING", "IN_PROGRESS", "COMPLETED", "FAILED"
+  notes       String?
+  
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
