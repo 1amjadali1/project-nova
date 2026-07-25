@@ -7,6 +7,7 @@ type Organization = {
   slug: string;
   email: string | null;
   phone: string | null;
+  website: string | null;
   isActive: boolean;
 };
 
@@ -33,7 +34,6 @@ export default function OrganizationTable({
         </thead>
 
         <tbody>
-
           {organizations.length === 0 ? (
             <tr>
               <td
@@ -44,14 +44,11 @@ export default function OrganizationTable({
               </td>
             </tr>
           ) : (
-
             organizations.map((org) => (
-
               <tr
                 key={org.id}
-                className="border-t border-slate-800 hover:bg-slate-800/40 transition"
+                className="border-t border-slate-800 transition hover:bg-slate-800/40"
               >
-
                 <td className="px-6 py-4 font-medium">
                   {org.name}
                 </td>
@@ -73,15 +70,11 @@ export default function OrganizationTable({
                 </td>
 
                 <td className="px-6 py-4 text-center">
-                  <ActionButtons id={org.id} />
+                  <ActionButtons organization={org} />
                 </td>
-
               </tr>
-
             ))
-
           )}
-
         </tbody>
 
       </table>

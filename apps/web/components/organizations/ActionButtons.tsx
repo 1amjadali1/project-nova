@@ -1,21 +1,50 @@
-type Props = {
+"use client";
+
+import { useState } from "react";
+import EditOrganizationModal from "./EditOrganizationModal";
+
+type Organization = {
   id: string;
+  name: string;
+  slug: string;
+  email: string | null;
+  phone: string | null;
+  website: string | null;
 };
 
-export default function ActionButtons({ id }: Props) {
-  return (
-    <div className="flex gap-2">
-      <button
-        className="rounded-lg bg-blue-600 px-3 py-1 text-sm hover:bg-blue-500"
-      >
-        Edit
-      </button>
+type Props = {
+  organization: Organization;
+};
 
-      <button
-        className="rounded-lg bg-red-600 px-3 py-1 text-sm hover:bg-red-500"
-      >
-        Delete
-      </button>
-    </div>
+export default function ActionButtons({
+  organization,
+}: Props) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <div className="flex justify-center gap-2">
+
+        <button
+          onClick={() => setOpen(true)}
+          className="rounded-lg bg-blue-600 px-3 py-1 text-sm font-medium hover:bg-blue-500"
+        >
+          Edit
+        </button>
+
+        <button
+          className="rounded-lg bg-red-600 px-3 py-1 text-sm font-medium hover:bg-red-500"
+        >
+          Delete
+        </button>
+
+      </div>
+
+      <EditOrganizationModal
+        open={open}
+        onClose={() => setOpen(false)}
+        organization={organization}
+      />
+    </>
   );
 }
