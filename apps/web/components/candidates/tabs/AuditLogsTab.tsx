@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 export default function AuditLogsTab({ auditLogs }: { auditLogs: any[] }) {
   if (!auditLogs || auditLogs.length === 0) {
     return (

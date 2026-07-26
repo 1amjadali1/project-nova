@@ -5,6 +5,8 @@ import SearchInput from "@/components/verifications/SearchInput";
 import Pagination from "@/components/verifications/Pagination";
 import SortDropdown from "@/components/verifications/SortDropdown";
 import { Prisma } from "@prisma/client";
+import { getEnterpriseSession } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/auth/rbac";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -13,6 +15,11 @@ export default async function VerificationsPage({
 }: {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const sessionData = await getEnterpriseSession();
+  if (!sessionData?.user) return null;
+  const userId = sessionData.user.id;
+  const profile = await prisma.employeeProfile.findUnique({ where: { userId } });
+  
   const params = await searchParams;
   const search = typeof params?.search === "string" ? params.search : undefined;
   
@@ -40,7 +47,7 @@ export default async function VerificationsPage({
       break;
   }
 
-  const where: Prisma.VerificationRequestWhereInput = search
+  const baseWhere: Prisma.VerificationRequestWhereInput = search
     ? {
         OR: [
           { type: { contains: search, mode: "insensitive" as const } },
@@ -49,6 +56,27 @@ export default async function VerificationsPage({
         ],
       }
     : {};
+
+  // Role-based visibility scoping
+  const isSuperAdmin = await hasPermission(userId, "SYSTEM_ALL");
+  const canViewAll = isSuperAdmin || await hasPermission(userId, "USERS_VIEW"); // Proxy for Managers
+
+  if (!canViewAll && profile) {
+    // If not a manager, what can they see?
+    // TL can see their team's cases. Agents can see their own cases.
+    const roleLevel = await prisma.employeeRoleAssignment.findFirst({
+      where: { employeeProfileId: profile.id },
+      include: { Role: true }
+    }).then(a => a?.Role.hierarchyLevel || 0);
+
+    if (roleLevel === 20) { // TL
+      baseWhere.teamId = profile.teamId;
+    } else { // Agent/QA
+      baseWhere.ownerId = profile.id;
+    }
+  }
+
+  const where = baseWhere;
 
   const [verifications, totalItems, candidates] = await Promise.all([
     prisma.verificationRequest.findMany({
@@ -67,6 +95,9 @@ export default async function VerificationsPage({
             }
           },
         },
+        owner: {
+          include: { user: { select: { firstName: true, lastName: true } } }
+        }
       },
     }),
     prisma.verificationRequest.count({ where }),

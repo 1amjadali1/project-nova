@@ -68,7 +68,7 @@ export default async function CandidateDetailsPage({
         <div className="flex items-center gap-6">
           <div className="h-24 w-24 rounded-full bg-slate-800 flex items-center justify-center text-3xl font-bold text-cyan-500 overflow-hidden ring-4 ring-slate-800/50 relative">
             {candidate.photoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
+               
               <img src={candidate.photoUrl} alt="Candidate" className="h-full w-full object-cover" />
             ) : (
               `${candidate.firstName[0]}${candidate.lastName[0]}`

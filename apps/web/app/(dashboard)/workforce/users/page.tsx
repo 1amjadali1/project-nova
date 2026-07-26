@@ -1,23 +1,35 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import StatusBadge from "@/components/candidates/StatusBadge"; // Reuse for now
+import { getEnterpriseSession } from "@/lib/auth/session";
+import ImpersonateButton from "./ImpersonateButton";
 
 export default async function WorkforceUsersPage() {
+  const sessionData = await getEnterpriseSession();
+  if (!sessionData?.user) return null;
+
+  const currentProfile = await prisma.employeeProfile.findUnique({
+    where: { userId: sessionData.user.id },
+    include: { EmployeeRoleAssignment: { include: { Role: true } } }
+  });
+
+  const myLevel = Math.max(...(currentProfile?.EmployeeRoleAssignment.map(r => r.Role.hierarchyLevel) || [0]));
+  const isSuperAdmin = currentProfile?.EmployeeRoleAssignment.some(r => r.Role.name === "Platform Super Admin");
   const users = await prisma.user.findMany({
     include: {
       employeeProfile: {
         include: {
           department: true,
           designation: true,
+          EmployeeRoleAssignment: {
+            include: { Role: true }
+          },
           manager: {
             include: { user: true }
           }
         }
       },
-      organization: true,
-      roles: {
-        include: { role: true }
-      }
+      organization: true
     },
     orderBy: { createdAt: "desc" }
   });
@@ -59,7 +71,7 @@ export default async function WorkforceUsersPage() {
                       {user.employeeProfile?.employeeId || "N/A"}
                     </div>
                     <div className="text-xs text-cyan-400 mt-1">
-                      {user.roles.map(r => r.role.name).join(", ") || "No Role"}
+                      {user.employeeProfile?.EmployeeRoleAssignment?.map((r: any) => r.Role.name).join(", ") || "No Role"}
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -77,12 +89,23 @@ export default async function WorkforceUsersPage() {
                     <StatusBadge active={user.isActive} />
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <Link
-                      href={`/workforce/users/${user.id}`}
-                      className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-cyan-400 transition hover:bg-slate-700"
-                    >
-                      View Profile
-                    </Link>
+                    <div className="flex items-center justify-end gap-2">
+                      {(() => {
+                        const targetLevel = Math.max(...(user.employeeProfile?.EmployeeRoleAssignment?.map((r: any) => r.Role.hierarchyLevel) || [0]));
+                        const canImpersonate = user.id !== sessionData.user.id && (isSuperAdmin || myLevel > targetLevel);
+                        
+                        if (canImpersonate) {
+                          return <ImpersonateButton targetUserId={user.id} />;
+                        }
+                        return null;
+                      })()}
+                      <Link
+                        href={`/workforce/users/${user.id}`}
+                        className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-cyan-400 transition hover:bg-slate-700"
+                      >
+                        View Profile
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}

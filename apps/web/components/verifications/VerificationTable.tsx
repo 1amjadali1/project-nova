@@ -18,6 +18,13 @@ type Verification = {
     };
   };
   createdAt: Date;
+  owner?: {
+    user: {
+      firstName: string;
+      lastName: string;
+    }
+  } | null;
+  currentStage?: string;
 };
 
 type Props = {
@@ -33,9 +40,10 @@ export default function VerificationTable({ verifications }: Props) {
             <tr>
               <th scope="col" className="whitespace-nowrap px-6 py-4 font-medium">Candidate</th>
               <th scope="col" className="whitespace-nowrap px-6 py-4 font-medium">Type</th>
+              <th scope="col" className="whitespace-nowrap px-6 py-4 font-medium">Owner</th>
+              <th scope="col" className="whitespace-nowrap px-6 py-4 font-medium">Stage</th>
               <th scope="col" className="whitespace-nowrap px-6 py-4 font-medium">Priority</th>
               <th scope="col" className="whitespace-nowrap px-6 py-4 font-medium">Status</th>
-              <th scope="col" className="whitespace-nowrap px-6 py-4 font-medium">Requested On</th>
               <th scope="col" className="whitespace-nowrap px-6 py-4 text-center font-medium">Actions</th>
             </tr>
           </thead>
@@ -84,13 +92,20 @@ export default function VerificationTable({ verifications }: Props) {
                     {verification.type.replace(/_/g, " ")}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">
+                    <div className="text-sm font-medium text-white">
+                      {verification.owner ? `${verification.owner.user.firstName} ${verification.owner.user.lastName}` : "Unassigned"}
+                    </div>
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <span className="inline-flex items-center rounded-full bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-300 border border-slate-700">
+                      {verification.currentStage ? verification.currentStage.replace(/_/g, " ") : "UNASSIGNED"}
+                    </span>
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4">
                     <PriorityBadge priority={verification.priority} />
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">
                     <StatusBadge status={verification.status} />
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-slate-300">
-                    {new Date(verification.createdAt).toLocaleDateString()}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-center">
                     <ActionButtons verification={verification} />

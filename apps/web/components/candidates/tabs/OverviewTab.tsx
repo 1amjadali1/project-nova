@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 export default function OverviewTab({ candidate }: { candidate: any }) {
   return (
     <div className="space-y-6 text-slate-300">

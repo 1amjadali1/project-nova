@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "@/lib/auth/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { loginWrapperAction, logFailedLoginAction } from "@/app/actions/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,16 +20,20 @@ export default function LoginPage() {
     setIsSubmitting(true);
     setErrorMsg(null);
 
-    const { error } = await signIn.email({
+    const { data, error } = await signIn.email({
       email,
       password,
       rememberMe,
     });
 
     if (error) {
+      await logFailedLoginAction(email);
       setErrorMsg(error.message || "Invalid credentials");
       setIsSubmitting(false);
     } else {
+      if (data?.session?.token) {
+        await loginWrapperAction(email, data.session.token);
+      }
       router.push("/dashboard");
       router.refresh();
     }

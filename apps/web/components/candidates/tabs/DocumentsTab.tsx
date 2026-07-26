@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import DocumentPreviewWrapper from "@/app/(dashboard)/documents/DocumentPreviewWrapper";
 
 export default function DocumentsTab({ candidate }: { candidate: any }) {

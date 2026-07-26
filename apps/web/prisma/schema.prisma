@@ -8,6 +8,677 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model Organization {
+  id                  String               @id @default(cuid())
+  name                String
+  slug                String               @unique
+  email               String?              @unique
+  phone               String?
+  website             String?
+  logoUrl             String?
+  isActive            Boolean              @default(true)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  aiJobs              AIJob[]
+  aiproviders         AIProvider[]
+  approvalLevels      ApprovalLevel[]
+  candidates          Candidate[]
+  clients             Client[]
+  departments         Department[]
+  designations        Designation[]
+  documents           Document[]
+  packages            Package[]
+  roles               Role[]
+  Team                Team[]
+  users               User[]
+  verificationResults VerificationResult[]
+  verificationRules   VerificationRule[]
+  webhookEndpoints    WebhookEndpoint[]
+  webhookEvents       WebhookEvent[]
+}
+
+model Candidate {
+  id                  String                @id @default(cuid())
+  firstName           String
+  lastName            String
+  email               String                @unique
+  phone               String?
+  isActive            Boolean               @default(true)
+  organizationId      String
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  aadhaarNumber       String?
+  dateOfBirth         DateTime?             @db.Date
+  panNumber           String?
+  alternatePhone      String?
+  candidateStatus     String?               @default("ACTIVE")
+  currentAddress      String?
+  drivingLicense      String?
+  emergencyContact    Json?
+  fatherName          String?
+  gender              String?
+  languages           String[]
+  maritalStatus       String?
+  maskedAadhaar       String?
+  maskedPan           String?
+  middleName          String?
+  motherName          String?
+  nationality         String?
+  passportNumber      String?
+  permanentAddress    String?
+  photoUrl            String?
+  voterId             String?
+  jobs                AIJob[]
+  organization        Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  documents           Document[]
+  verifications       VerificationRequest[]
+  verificationResults VerificationResult[]
+  aiProviders         AIProvider[]          @relation("AIProviderToCandidate")
+}
+
+model VerificationResult {
+  id                  String             @id @default(cuid())
+  riskScore           Int
+  riskLevel           String
+  confidence          Float
+  matchedFields       Json
+  mismatchedFields    Json
+  recommendations     String[]
+  explanation         String?
+  candidateId         String
+  documentId          String
+  jobId               String?            @unique
+  organizationId      String
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  overallStatus       VerificationStatus
+  verificationCheckId String?
+  candidate           Candidate          @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  document            Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  job                 AIJob?             @relation(fields: [jobId], references: [id])
+  organization        Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  verificationCheck   VerificationCheck? @relation(fields: [verificationCheckId], references: [id])
+}
+
+model VerificationRule {
+  id             String       @id @default(cuid())
+  organizationId String
+  documentType   String
+  fieldName      String
+  mismatchScore  Int
+  mustMatch      Boolean      @default(false)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, documentType, fieldName])
+}
+
+model AIProvider {
+  id                String             @id @default(cuid())
+  organizationId    String
+  name              String
+  code              String
+  version           String
+  priority          Int                @default(0)
+  enabled           Boolean            @default(true)
+  supportedFeatures String[]
+  costPerRequest    Float?
+  costPerPage       Float?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  status            ProviderStatus     @default(HEALTHY)
+  jobs              AIJob[]
+  organization      Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  metrics           AIProviderMetric[]
+  candidates        Candidate[]        @relation("AIProviderToCandidate")
+
+  @@unique([organizationId, code])
+}
+
+model AIProviderMetric {
+  id            String     @id @default(cuid())
+  providerId    String
+  date          DateTime   @db.Date
+  totalRequests Int        @default(0)
+  successCount  Int        @default(0)
+  failureCount  Int        @default(0)
+  avgTimeMs     Int        @default(0)
+  avgConfidence Float      @default(0)
+  retries       Int        @default(0)
+  provider      AIProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, date])
+}
+
+model VerificationRequest {
+  id          String               @id @default(cuid())
+  type        String
+  notes       String?
+  candidateId String
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  status      RequestStatus        @default(PENDING)
+  priority    VerificationPriority @default(NORMAL)
+  clientId    String?
+  packageId   String?
+  checks      VerificationCheck[]
+  candidate   Candidate            @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  client      Client?              @relation(fields: [clientId], references: [id])
+  package     Package?             @relation(fields: [packageId], references: [id])
+  
+  // Phase 5.3 Case Ownership Fields
+  ownerId          String?
+  assignedById     String?
+  assignedDate     DateTime?
+  lastReassigned   DateTime?
+  teamId           String?
+  departmentId     String?
+  currentStage     WorkflowStage        @default(UNASSIGNED)
+  slaDueDate       DateTime?
+  riskScore        Int?
+  
+  owner            EmployeeProfile?     @relation("CaseOwner", fields: [ownerId], references: [id])
+  assignedBy       EmployeeProfile?     @relation("CaseAssigner", fields: [assignedById], references: [id])
+  team             Team?                @relation(fields: [teamId], references: [id])
+  department       Department?          @relation(fields: [departmentId], references: [id])
+  
+  timelineEvents   TimelineEvent[]
+}
+
+model VerificationCheck {
+  id                    String               @id @default(cuid())
+  verificationRequestId String
+  category              String
+  subCategory           String?
+  status                RequestStatus        @default(PENDING)
+  approvalRequests      ApprovalRequest[]
+  documents             Document[]
+  verificationRequest   VerificationRequest  @relation(fields: [verificationRequestId], references: [id], onDelete: Cascade)
+  verificationResults   VerificationResult[]
+  workAssignment        WorkAssignment?
+  timelineEvents        TimelineEvent[]
+}
+
+model Client {
+  id             String                @id @default(cuid())
+  organizationId String
+  name           String
+  industry       String?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  requests       VerificationRequest[]
+}
+
+model Package {
+  id             String                @id @default(cuid())
+  organizationId String
+  name           String
+  checksConfig   Json
+  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  requests       VerificationRequest[]
+}
+
+model TimelineEvent {
+  id                    String              @id @default(cuid())
+  candidateId           String?
+  verificationRequestId String?
+  verificationCheckId   String?
+  documentId            String?
+  userId                String?
+  userRole              String?
+  action                String
+  description           String?
+  comment               String?
+  metadata              Json?
+  createdAt             DateTime            @default(now())
+
+  verificationRequest   VerificationRequest? @relation(fields: [verificationRequestId], references: [id], onDelete: Cascade)
+  verificationCheck     VerificationCheck?   @relation(fields: [verificationCheckId], references: [id], onDelete: Cascade)
+  user                  User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model SystemAuditLog {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String?
+  action         String
+  entityType     String
+  entityId       String
+  details        Json?
+  createdAt      DateTime @default(now())
+}
+
+model User {
+  id                  String           @id @default(cuid())
+  email               String           @unique
+  firstName           String
+  lastName            String
+  isActive            Boolean          @default(true)
+  organizationId      String
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  emailVerified       Boolean          @default(false)
+  image               String?
+  name                String
+  phone               String?
+  performedAILogs     AIAuditLog[]     @relation("PerformedAILogs")
+  verifiedExtractions AIExtraction[]   @relation("VerifiedExtractions")
+  accounts            Account[]
+  uploadedDocuments   Document[]       @relation("UploadedDocuments")
+  verifiedDocuments   Document[]       @relation("VerifiedDocuments")
+  employeeProfile     EmployeeProfile?
+  sessions            Session[]
+  userSessions        UserSession[]
+  passwordHistory     PasswordHistory[]
+  organization        Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  roles               UserRole[]
+  auditLogs           AuditLog[]
+  impersonatedBy      ImpersonationLog[] @relation("Impersonator")
+  impersonations      ImpersonationLog[] @relation("Impersonated")
+  timelineEvents      TimelineEvent[]
+}
+
+model ImpersonationLog {
+  id                  String    @id @default(cuid())
+  originalUserId      String
+  impersonatedUserId  String
+  reason              String
+  startedAt           DateTime  @default(now())
+  endedAt             DateTime?
+  browser             String?
+  ipAddress           String?
+  betterAuthSessionId String?
+
+  originalUser        User      @relation("Impersonator", fields: [originalUserId], references: [id], onDelete: Cascade)
+  impersonatedUser    User      @relation("Impersonated", fields: [impersonatedUserId], references: [id], onDelete: Cascade)
+}
+
+model Role {
+  id                     String                   @id @default(cuid())
+  name                   String
+  organizationId         String
+  hierarchyLevel         Int                      @default(0)
+  isSystem               Boolean                  @default(false)
+  parentId               String?
+  parent                 Role?                    @relation("RoleHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children               Role[]                   @relation("RoleHierarchy")
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  EmployeeRoleAssignment EmployeeRoleAssignment[]
+  organization           Organization             @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  rolePermissions        RolePermission[]
+  users                  UserRole[]
+  permissions            Permission[]             @relation("PermissionToRole")
+
+  @@unique([name, organizationId])
+}
+
+model UserRole {
+  id        String   @id @default(cuid())
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+}
+
+model Permission {
+  id              String           @id @default(cuid())
+  name            String           @unique
+  category        String?
+  action          String?
+  description     String?
+  createdAt       DateTime         @default(now())
+  rolePermissions RolePermission[]
+  roles           Role[]           @relation("PermissionToRole")
+}
+
+model Department {
+  id             String            @id @default(cuid())
+  organizationId String
+  name           String
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  profiles       EmployeeProfile[]
+  Team           Team[]
+  requests       VerificationRequest[]
+}
+
+model Designation {
+  id             String            @id @default(cuid())
+  organizationId String
+  name           String
+  level          Int
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  profiles       EmployeeProfile[]
+}
+
+model ApprovalLevel {
+  id             String            @id @default(cuid())
+  organizationId String
+  name           String
+  priority       Int
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  profiles       EmployeeProfile[]
+}
+
+model EmployeeProfile {
+  id                     String                   @id @default(cuid())
+  userId                 String                   @unique
+  departmentId           String?
+  designationId          String?
+  approvalLevelId        String?
+  managerId              String?
+  emergencyContact       String?
+  employeeId             String?                  @unique
+  joiningDate            DateTime?                @db.Date
+  officeLocation         String?
+  lastLogin              DateTime?
+  notes                  String?
+  passwordResetRequired  Boolean                  @default(true)
+  status                 EmployeeStatus           @default(ACTIVE)
+  teamId                 String?
+  twoFactorEnabled       Boolean                  @default(false)
+  middleName             String?
+  personalEmail          String?
+  alternateMobile        String?
+  employmentType         EmploymentType?
+  confirmationDate       DateTime?                @db.Date
+  lastLogout             DateTime?
+  createdBy              String?
+  updatedBy              String?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @default(now()) @updatedAt
+  failedLoginAttempts    Int                      @default(0)
+  lastFailedLogin        DateTime?
+  lockedUntil            DateTime?
+  passwordExpiresAt      DateTime?
+
+  ownedCases             VerificationRequest[]    @relation("CaseOwner")
+  assignedCases          VerificationRequest[]    @relation("CaseAssigner")
+
+  approvalRequests       ApprovalRequest[]        @relation("ApprovalRequester")
+  approvalReviews        ApprovalRequest[]        @relation("ApprovalReviewer")
+  approvalLevel          ApprovalLevel?           @relation(fields: [approvalLevelId], references: [id])
+  department             Department?              @relation(fields: [departmentId], references: [id])
+  designation            Designation?             @relation(fields: [designationId], references: [id])
+  manager                EmployeeProfile?         @relation("ReportingHierarchy", fields: [managerId], references: [id])
+  subordinates           EmployeeProfile[]        @relation("ReportingHierarchy")
+  Team                   Team?                    @relation(fields: [teamId], references: [id])
+  user                   User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  EmployeeRoleAssignment EmployeeRoleAssignment[]
+  notifications          NotificationEvent[]      @relation("Notifications")
+  assignedByWork         WorkAssignment[]         @relation("AssignedBy")
+  assignedWork           WorkAssignment[]         @relation("AssignedWork")
+}
+
+model RolePermission {
+  id           String     @id @default(cuid())
+  roleId       String
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model WorkAssignment {
+  id                  String            @id @default(cuid())
+  verificationCheckId String            @unique
+  assigneeId          String
+  assignedById        String?
+  status              AssignmentStatus  @default(PENDING)
+  slaStatus           SLAStatus         @default(ON_TRACK)
+  assignedAt          DateTime          @default(now())
+  startedAt           DateTime?
+  completedAt         DateTime?
+  slaDueDate          DateTime?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  assignedBy          EmployeeProfile?  @relation("AssignedBy", fields: [assignedById], references: [id])
+  assignee            EmployeeProfile   @relation("AssignedWork", fields: [assigneeId], references: [id])
+  verificationCheck   VerificationCheck @relation(fields: [verificationCheckId], references: [id], onDelete: Cascade)
+}
+
+model ApprovalRequest {
+  id                  String            @id @default(cuid())
+  verificationCheckId String
+  requesterId         String
+  reviewerId          String?
+  type                RequestType       @default(APPROVAL)
+  status              ApprovalStatus    @default(PENDING)
+  comments            String?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  requester           EmployeeProfile   @relation("ApprovalRequester", fields: [requesterId], references: [id])
+  reviewer            EmployeeProfile?  @relation("ApprovalReviewer", fields: [reviewerId], references: [id])
+  verificationCheck   VerificationCheck @relation(fields: [verificationCheckId], references: [id], onDelete: Cascade)
+}
+
+model NotificationEvent {
+  id             String          @id @default(cuid())
+  organizationId String
+  recipientId    String
+  title          String
+  message        String
+  isRead         Boolean         @default(false)
+  link           String?
+  createdAt      DateTime        @default(now())
+  recipient      EmployeeProfile @relation("Notifications", fields: [recipientId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime
+  updatedAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserSession {
+  id                  String             @id @default(cuid())
+  userId              String
+  betterAuthSessionId String?            @unique
+  loginTime           DateTime           @default(now())
+  logoutTime          DateTime?
+  ipAddress           String?
+  browser             String?
+  os                  String?
+  deviceName          String?
+  status              UserSessionStatus  @default(ACTIVE)
+  lastActivity        DateTime           @default(now())
+  sessionType         SessionType        @default(NORMAL)
+  
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PasswordHistory {
+  id           String   @id @default(cuid())
+  userId       String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime
+  updatedAt  DateTime
+}
+
+model Document {
+  id                  String               @id @default(cuid())
+  documentType        String
+  fileName            String
+  originalFileName    String
+  mimeType            String
+  fileSize            Int
+  storagePath         String
+  storageProvider     String               @default("SUPABASE")
+  notes               String?
+  candidateId         String
+  organizationId      String
+  uploadedById        String?
+  verifiedById        String?
+  isDeleted           Boolean              @default(false)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  status              DocumentStatus       @default(UPLOADED)
+  verificationCheckId String?
+  aiJobs              AIJob[]
+  candidate           Candidate            @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  organization        Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  uploadedBy          User?                @relation("UploadedDocuments", fields: [uploadedById], references: [id])
+  verificationCheck   VerificationCheck?   @relation(fields: [verificationCheckId], references: [id])
+  verifiedBy          User?                @relation("VerifiedDocuments", fields: [verifiedById], references: [id])
+  verificationResults VerificationResult[]
+}
+
+model AIJob {
+  id                 String              @id @default(cuid())
+  jobType            String
+  priority           Int                 @default(0)
+  retryCount         Int                 @default(0)
+  startedAt          DateTime?
+  completedAt        DateTime?
+  errorMessage       String?
+  confidenceScore    Float?
+  processingTime     Int?
+  documentId         String
+  candidateId        String
+  organizationId     String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  modelVersion       String?
+  provider           String?
+  rawText            String?
+  structuredJson     Json?
+  validationScore    Float?
+  providerId         String?
+  status             AIJobStatus         @default(QUEUED)
+  auditLogs          AIAuditLog[]
+  extractions        AIExtraction[]
+  candidate          Candidate           @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  document           Document            @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  organization       Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  aiProvider         AIProvider?         @relation(fields: [providerId], references: [id])
+  verificationResult VerificationResult?
+}
+
+model AIExtraction {
+  id              String   @id @default(cuid())
+  fieldName       String
+  fieldValue      String
+  confidence      Float
+  verified        Boolean  @default(false)
+  verifiedById    String?
+  jobId           String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  isAutoVerified  Boolean  @default(false)
+  validationError String?
+  job             AIJob    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  verifiedBy      User?    @relation("VerifiedExtractions", fields: [verifiedById], references: [id])
+}
+
+model AIAuditLog {
+  id            String      @id @default(cuid())
+  notes         String?
+  performedById String?
+  jobId         String
+  createdAt     DateTime    @default(now())
+  action        AuditAction
+  job           AIJob       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  performedBy   User?       @relation("PerformedAILogs", fields: [performedById], references: [id])
+}
+
+model WebhookEndpoint {
+  id             String            @id @default(cuid())
+  organizationId String
+  url            String
+  secret         String
+  isActive       Boolean           @default(true)
+  events         String[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  deliveries     WebhookDelivery[]
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model WebhookEvent {
+  id             String            @id @default(cuid())
+  organizationId String
+  type           String
+  payload        Json
+  createdAt      DateTime          @default(now())
+  deliveries     WebhookDelivery[]
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model WebhookDelivery {
+  id            String          @id @default(cuid())
+  endpointId    String
+  eventId       String
+  status        String
+  statusCode    Int?
+  attempts      Int             @default(0)
+  lastAttemptAt DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  endpoint      WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+  event         WebhookEvent    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model EmployeeRoleAssignment {
+  id                String          @id
+  employeeProfileId String
+  roleId            String
+  assignedAt        DateTime        @default(now())
+  EmployeeProfile   EmployeeProfile @relation(fields: [employeeProfileId], references: [id], onDelete: Cascade)
+  Role              Role            @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeProfileId, roleId])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Team {
+  id              String            @id
+  organizationId  String
+  departmentId    String
+  name            String
+  EmployeeProfile EmployeeProfile[]
+  Department      Department        @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  Organization    Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  requests        VerificationRequest[]
+}
+
 enum VerificationStatus {
   VERIFIED
   PARTIALLY_VERIFIED
@@ -33,6 +704,10 @@ enum RequestStatus {
   IN_PROGRESS
   COMPLETED
   FAILED
+  ON_HOLD
+  CLOSED
+  VERIFIED
+  REJECTED
 }
 
 enum DocumentStatus {
@@ -63,404 +738,6 @@ enum AuditAction {
   WAITING_FOR_REVIEW
 }
 
-model Organization {
-  id      String  @id @default(cuid())
-  name    String
-  slug    String  @unique
-  email   String? @unique
-  phone   String?
-  website String?
-  logoUrl String?
-
-  isActive Boolean @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  candidates          Candidate[]
-  users               User[]
-  roles               Role[]
-  documents           Document[]
-  aiJobs              AIJob[]
-  aiproviders         AIProvider[]
-  verificationResults VerificationResult[]
-  verificationRules   VerificationRule[]
-
-  webhookEndpoints    WebhookEndpoint[]
-  webhookEvents       WebhookEvent[]
-
-  clients             Client[]
-  packages            Package[]
-
-  departments         Department[]
-  designations        Designation[]
-  approvalLevels      ApprovalLevel[]
-}
-
-model Candidate {
-  id        String  @id @default(cuid())
-  firstName String
-  lastName  String
-  email     String  @unique
-  phone     String?
-  isActive  Boolean @default(true)
-
-  dateOfBirth   DateTime? @db.Date
-  panNumber     String?
-  aadhaarNumber String?
-
-  middleName       String?
-  gender           String?
-  fatherName       String?
-  motherName       String?
-  alternatePhone   String?
-  currentAddress   String? @db.Text
-  permanentAddress String? @db.Text
-  emergencyContact Json?   
-  nationality      String?
-  maritalStatus    String?
-  languages        String[]
-  candidateStatus  String? @default("ACTIVE")
-  photoUrl         String?
-  
-  maskedAadhaar    String?
-  maskedPan        String?
-  passportNumber   String?
-  drivingLicense   String?
-  voterId          String?
-
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  verifications VerificationRequest[]
-  documents     Document[]
-  jobs          AIJob[]
-
-  verificationResults VerificationResult[]
-
-  aiProviders AIProvider[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model VerificationResult {
-  id String @id @default(cuid())
-
-  overallStatus VerificationStatus
-  riskScore     Int
-  riskLevel     String
-  confidence    Float
-
-  matchedFields    Json
-  mismatchedFields Json
-
-  recommendations String[]
-  explanation     String?  @db.Text
-
-  candidateId    String
-  candidate      Candidate    @relation(fields: [candidateId], references: [id], onDelete: Cascade)
-  documentId     String
-  document       Document     @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  jobId          String?      @unique
-  job            AIJob?       @relation(fields: [jobId], references: [id], onDelete: SetNull)
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  
-  verificationCheckId String?
-  verificationCheck   VerificationCheck? @relation(fields: [verificationCheckId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model VerificationRule {
-  id             String  @id @default(cuid())
-  organizationId String
-  documentType   String
-  fieldName      String
-  mismatchScore  Int
-  mustMatch      Boolean @default(false)
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  @@unique([organizationId, documentType, fieldName])
-}
-
-model AIProvider {
-  id             String         @id @default(cuid())
-  organizationId String
-  name           String
-  code           String
-  version        String
-  status         ProviderStatus @default(HEALTHY)
-  priority       Int            @default(0)
-  enabled        Boolean        @default(true)
-
-  supportedFeatures String[]
-
-  costPerRequest Float?
-  costPerPage    Float?
-
-  metrics AIProviderMetric[]
-  jobs    AIJob[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  candidates   Candidate[]
-
-  @@unique([organizationId, code])
-}
-
-model AIProviderMetric {
-  id         String   @id @default(cuid())
-  providerId String
-  date       DateTime @db.Date
-
-  totalRequests Int   @default(0)
-  successCount  Int   @default(0)
-  failureCount  Int   @default(0)
-  avgTimeMs     Int   @default(0)
-  avgConfidence Float @default(0)
-  retries       Int   @default(0)
-
-  provider AIProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
-
-  @@unique([providerId, date])
-}
-
-model VerificationRequest {
-  id       String               @id @default(cuid())
-  type     String // e.g. "CRIMINAL_RECORD", "EMPLOYMENT", "EDUCATION"
-  status   RequestStatus        @default(PENDING) // e.g. "PENDING", "IN_PROGRESS", "COMPLETED", "FAILED"
-  priority VerificationPriority @default(NORMAL)
-  notes  String?
-
-  candidateId String
-  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
-
-  clientId    String?
-  client      Client?  @relation(fields: [clientId], references: [id])
-  
-  packageId   String?
-  package     Package? @relation(fields: [packageId], references: [id])
-
-  checks      VerificationCheck[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model VerificationCheck {
-  id                    String @id @default(cuid())
-  verificationRequestId String
-  category              String // "EMPLOYMENT", "EDUCATION", "IDENTITY", "CRIMINAL"
-  subCategory           String? // e.g. "PhD", "Employment 1"
-  status                RequestStatus @default(PENDING)
-  
-  verificationRequest   VerificationRequest @relation(fields: [verificationRequestId], references: [id], onDelete: Cascade)
-  documents             Document[]
-  verificationResults   VerificationResult[]
-  
-  workAssignment        WorkAssignment?
-  approvalRequests      ApprovalRequest[]
-}
-
-model Client {
-  id             String @id @default(cuid())
-  organizationId String
-  name           String
-  industry       String?
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  requests       VerificationRequest[]
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-
-model Package {
-  id             String @id @default(cuid())
-  organizationId String
-  name           String // e.g. "Executive", "Basic"
-  checksConfig   Json   // Defines array of Verification Categories to auto-generate
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  requests       VerificationRequest[]
-}
-
-model TimelineEvent {
-  id                    String @id @default(cuid())
-  candidateId           String
-  verificationRequestId String?
-  documentId            String?
-  action                String // e.g., "STATUS_CHANGED", "AI_STARTED"
-  description           String
-  metadata              Json?
-  createdAt             DateTime @default(now())
-}
-
-model SystemAuditLog {
-  id             String @id @default(cuid())
-  organizationId String
-  userId         String?
-  action         String
-  entityType     String
-  entityId       String
-  details        Json?
-  createdAt      DateTime @default(now())
-}
-
-
-model User {
-  id            String  @id @default(cuid())
-  name          String
-  email         String  @unique
-  emailVerified Boolean @default(false)
-  image         String?
-  firstName     String
-  lastName      String
-  phone         String?
-  isActive      Boolean @default(true)
-
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  roles    UserRole[]
-  sessions Session[]
-  accounts Account[]
-  
-  employeeProfile EmployeeProfile?
-
-  uploadedDocuments Document[] @relation("UploadedDocuments")
-  verifiedDocuments Document[] @relation("VerifiedDocuments")
-
-  verifiedExtractions AIExtraction[] @relation("VerifiedExtractions")
-  performedAILogs     AIAuditLog[]   @relation("PerformedAILogs")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Role {
-  id   String @id @default(cuid())
-  name String
-
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  users           UserRole[]
-  permissions     Permission[] // Deprecated, keep for 1 sprint
-  rolePermissions RolePermission[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([name, organizationId])
-}
-
-model UserRole {
-  id     String @id @default(cuid())
-  userId String
-  roleId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@unique([userId, roleId])
-}
-
-model Permission {
-  id          String  @id @default(cuid())
-  name        String  @unique // e.g. "users:read", "users:write"
-  description String?
-  roles       Role[] // Deprecated, keep for 1 sprint
-  rolePermissions RolePermission[]
-
-  createdAt DateTime @default(now())
-}
-
-// ----------------------------------------------------
-// WORKFORCE HIERARCHY
-// ----------------------------------------------------
-
-model Department {
-  id             String @id @default(cuid())
-  organizationId String
-  name           String // e.g., "Operations", "Quality Assurance", "IT"
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  profiles       EmployeeProfile[]
-}
-
-model Designation {
-  id             String @id @default(cuid())
-  organizationId String
-  name           String // e.g., "Verification Agent", "Team Leader"
-  level          Int    // Numeric hierarchy level (1 = Super Admin, 5 = Agent)
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  profiles       EmployeeProfile[]
-}
-
-model ApprovalLevel {
-  id             String @id @default(cuid())
-  organizationId String
-  name           String // e.g., "L1 Approval", "Final QA Approval"
-  priority       Int
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  profiles       EmployeeProfile[]
-}
-
-model EmployeeProfile {
-  id             String @id @default(cuid())
-  userId         String @unique
-  user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  employeeId       String?   @unique
-  joiningDate      DateTime? @db.Date
-  emergencyContact String?
-  officeLocation   String?
-  
-  departmentId   String?
-  department     Department? @relation(fields: [departmentId], references: [id])
-  
-  designationId  String?
-  designation    Designation? @relation(fields: [designationId], references: [id])
-  
-  approvalLevelId String?
-  approvalLevel   ApprovalLevel? @relation(fields: [approvalLevelId], references: [id])
-  
-  // Hierarchy Management
-  managerId      String?
-  manager        EmployeeProfile?  @relation("ReportingHierarchy", fields: [managerId], references: [id])
-  subordinates   EmployeeProfile[] @relation("ReportingHierarchy")
-  
-  // Workflow Engine
-  assignedWork        WorkAssignment[]  @relation("AssignedWork")
-  assignedByWork      WorkAssignment[]  @relation("AssignedBy")
-  approvalRequests    ApprovalRequest[] @relation("ApprovalRequester")
-  approvalReviews     ApprovalRequest[] @relation("ApprovalReviewer")
-  notifications       NotificationEvent[] @relation("Notifications")
-}
-
-// ----------------------------------------------------
-// ENHANCED RBAC
-// ----------------------------------------------------
-
-model RolePermission {
-  id           String @id @default(cuid())
-  roleId       String
-  permissionId String
-  
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  @@unique([roleId, permissionId])
-}
-
-// ----------------------------------------------------
-// WORKFLOW & ASSIGNMENTS
-// ----------------------------------------------------
-
 enum AssignmentStatus {
   PENDING
   IN_PROGRESS
@@ -473,28 +750,6 @@ enum SLAStatus {
   ON_TRACK
   DELAYED
   OVERDUE
-}
-
-model WorkAssignment {
-  id                  String   @id @default(cuid())
-  verificationCheckId String   @unique 
-  assigneeId          String   // EmployeeProfile ID
-  assignedById        String?  // Who assigned it
-  
-  status              AssignmentStatus @default(PENDING)
-  slaStatus           SLAStatus        @default(ON_TRACK)
-  
-  assignedAt          DateTime  @default(now())
-  startedAt           DateTime?
-  completedAt         DateTime?
-  slaDueDate          DateTime?
-  
-  verificationCheck   VerificationCheck @relation(fields: [verificationCheckId], references: [id], onDelete: Cascade)
-  assignee            EmployeeProfile   @relation("AssignedWork", fields: [assigneeId], references: [id])
-  assignedBy          EmployeeProfile?  @relation("AssignedBy", fields: [assignedById], references: [id])
-
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
 }
 
 enum ApprovalStatus {
@@ -514,232 +769,48 @@ enum RequestType {
   CLARIFICATION
 }
 
-model ApprovalRequest {
-  id                  String   @id @default(cuid())
-  verificationCheckId String
-  requesterId         String   // Agent submitting the request
-  reviewerId          String?  // QA/Manager reviewing it
-  
-  type                RequestType    @default(APPROVAL)
-  status              ApprovalStatus @default(PENDING)
-  comments            String?
-  
-  verificationCheck   VerificationCheck @relation(fields: [verificationCheckId], references: [id], onDelete: Cascade)
-  requester           EmployeeProfile   @relation("ApprovalRequester", fields: [requesterId], references: [id])
-  reviewer            EmployeeProfile?  @relation("ApprovalReviewer", fields: [reviewerId], references: [id])
-  
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  LOCKED
 }
 
-// ----------------------------------------------------
-// NOTIFICATIONS
-// ----------------------------------------------------
-
-model NotificationEvent {
-  id             String   @id @default(cuid())
-  organizationId String
-  recipientId    String   // EmployeeProfile ID
-  title          String
-  message        String
-  isRead         Boolean  @default(false)
-  link           String?  // Deep link to the task
-  
-  recipient      EmployeeProfile @relation("Notifications", fields: [recipientId], references: [id], onDelete: Cascade)
-  
-  createdAt      DateTime @default(now())
+enum EmploymentType {
+  PERMANENT
+  CONTRACT
+  VENDOR
+  INTERN
 }
 
-model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String   @unique
-  createdAt DateTime
-  updatedAt DateTime
-  ipAddress String?
-  userAgent String?
+enum UserSessionStatus {
+  ACTIVE
+  EXPIRED
+  TERMINATED
+}
+
+enum SessionType {
+  NORMAL
+  ADMIN
+  SWITCH_USER
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime
-  updatedAt             DateTime
-}
-
-model Verification {
-  id         String   @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime
-  updatedAt  DateTime
-}
-
-model Document {
-  id               String         @id @default(cuid())
-  documentType     String // "Aadhaar", "PAN", "Passport", etc.
-  fileName         String // Internal storage name
-  originalFileName String // The original uploaded file name
-  mimeType         String
-  fileSize         Int // In bytes
-  storagePath      String
-  storageProvider  String         @default("SUPABASE")
-  status           DocumentStatus @default(UPLOADED) // "UPLOADED", "PROCESSING", "OCR_COMPLETED", "VERIFIED", "REJECTED", "EXPIRED"
-  notes            String?
-
-  candidateId String
-  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
-
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  uploadedById String?
-  uploadedBy   User?   @relation("UploadedDocuments", fields: [uploadedById], references: [id], onDelete: SetNull)
-
-  verifiedById String?
-  verifiedBy   User?   @relation("VerifiedDocuments", fields: [verifiedById], references: [id], onDelete: SetNull)
-
-  aiJobs AIJob[]
-
-  isDeleted Boolean @default(false)
-
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  verificationResults VerificationResult[]
-  
-  verificationCheckId String?
-  verificationCheck   VerificationCheck? @relation(fields: [verificationCheckId], references: [id], onDelete: SetNull)
-}
-
-model AIJob {
-  id String @id @default(cuid())
-
-  jobType    String // OCR, DOCUMENT_CLASSIFICATION, RESUME_PARSING, etc.
-  status     AIJobStatus @default(QUEUED) // QUEUED, PROCESSING, WAITING_FOR_REVIEW, COMPLETED, FAILED, CANCELLED
-  priority   Int         @default(0) // Higher number = higher priority
-  retryCount Int         @default(0)
-
-  startedAt       DateTime?
-  completedAt     DateTime?
-  errorMessage    String?
-  confidenceScore Float?
-  processingTime  Int? // In milliseconds
-
-  provider        String? // e.g. "MOCK", "GOOGLE_VISION", "AZURE_DOCUMENT_INTELLIGENCE"
-  providerId      String? // Optional link to AIProvider record
-  modelVersion    String?
-  rawText         String? @db.Text
-  structuredJson  Json?
-  validationScore Float?
-
-  documentId String
-  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
-
-  candidateId String
-  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
-
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  aiProvider AIProvider? @relation(fields: [providerId], references: [id], onDelete: SetNull)
-
-  extractions AIExtraction[]
-  auditLogs   AIAuditLog[]
-
-  verificationResult VerificationResult?
-
+  action    String
+  details   String?
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
 }
 
-model AIExtraction {
-  id String @id @default(cuid())
-
-  fieldName  String
-  fieldValue String @db.Text
-  confidence Float
-
-  validationError String?
-  isAutoVerified  Boolean @default(false)
-
-  verified     Boolean @default(false)
-  verifiedById String?
-  verifiedBy   User?   @relation("VerifiedExtractions", fields: [verifiedById], references: [id], onDelete: SetNull)
-
-  jobId String
-  job   AIJob  @relation(fields: [jobId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model AIAuditLog {
-  id String @id @default(cuid())
-
-  action AuditAction // CREATED, RETRIED, CANCELLED, COMPLETED, FAILED, PROCESSING, WAITING_FOR_REVIEW
-  notes  String?     @db.Text
-
-  performedById String?
-  performedBy   User?   @relation("PerformedAILogs", fields: [performedById], references: [id], onDelete: SetNull)
-
-  jobId String
-  job   AIJob  @relation(fields: [jobId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-}
-
-model WebhookEndpoint {
-  id             String   @id @default(cuid())
-  organizationId String
-  url            String
-  secret         String
-  isActive       Boolean  @default(true)
-  events         String[] // Array of event types
-  
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  deliveries     WebhookDelivery[]
-
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-
-model WebhookEvent {
-  id             String   @id @default(cuid())
-  organizationId String
-  type           String
-  payload        Json
-  
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  deliveries     WebhookDelivery[]
-
-  createdAt      DateTime @default(now())
-}
-
-model WebhookDelivery {
-  id             String   @id @default(cuid())
-  endpointId     String
-  eventId        String
-  status         String   // PENDING, SUCCESS, FAILED
-  statusCode     Int?
-  attempts       Int      @default(0)
-  lastAttemptAt  DateTime?
-
-  endpoint       WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
-  event          WebhookEvent    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+enum WorkflowStage {
+  UNASSIGNED
+  AGENT_PROCESSING
+  QA_REVIEW
+  TL_REVIEW
+  MANAGER_REVIEW
+  CLIENT_REVIEW
+  COMPLETED
+  CLOSED
 }

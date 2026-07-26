@@ -14,7 +14,7 @@ export enum JobStatus {
   DEAD_LETTER = "DEAD_LETTER",
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export interface Job<T = any> {
   id: string;
   type: JobType;

@@ -1,59 +1,88 @@
 import { prisma } from "@/lib/prisma";
 
-export async function hasPermission(userId: string, action: string): Promise<boolean> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: {
-      roles: {
-        include: {
-          role: {
-            include: {
-              permissions: true,
-            },
-          },
-        },
-      },
-    },
+/**
+ * Enterprise RBAC Engine
+ * Evaluates if a user has a specific permission via their assigned roles and any inherited roles.
+ */
+
+// Helper to get all descendant role IDs recursively
+async function getDescendantRoleIds(roleId: string, currentSet: Set<string> = new Set()): Promise<Set<string>> {
+  if (currentSet.has(roleId)) return currentSet;
+  currentSet.add(roleId);
+
+  const role = await prisma.role.findUnique({
+    where: { id: roleId },
+    include: { children: true }
   });
 
-  if (!user || !user.isActive) {
-    return false;
+  if (role && role.children.length > 0) {
+    for (const child of role.children) {
+      await getDescendantRoleIds(child.id, currentSet);
+    }
   }
 
-  // SUPER_ADMIN automatically has unrestricted access to all permissions
-  const isSuperAdmin = user.roles.some((ur) => ur.role.name === "SUPER_ADMIN");
-  if (isSuperAdmin) {
-    return true;
-  }
-
-  // Flatten permissions across all roles
-  const permissions = user.roles.flatMap((ur) => ur.role.permissions);
-
-  // Check if they have the global permission
-  return permissions.some((p) => {
-    // Basic exact match (e.g. "users:read")
-    if (p.name === action) return true;
-    
-    // Feature flags or wildcards can be checked here in the future
-    if (p.name === "*") return true;
-
-    return false;
-  });
+  return currentSet;
 }
 
-export async function hasRole(userId: string, roleName: string): Promise<boolean> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: {
-      roles: {
-        include: {
-          role: true
-        }
-      }
+export async function hasPermission(userId: string, permissionName: string): Promise<boolean> {
+  // Get direct roles
+  const assignments = await prisma.employeeRoleAssignment.findMany({
+    where: { EmployeeProfile: { userId } },
+    include: { Role: true }
+  });
+
+  if (!assignments || assignments.length === 0) return false;
+
+  // Platform Super Admin bypass
+  if (assignments.some(a => a.Role.name === "Platform Super Admin")) return true;
+
+  // Collect all valid role IDs (direct + descendants)
+  const allRoleIds = new Set<string>();
+  for (const a of assignments) {
+    await getDescendantRoleIds(a.roleId, allRoleIds);
+  }
+
+  // Check if any of these roles have the specific permission
+  const specificCheck = await prisma.rolePermission.findFirst({
+    where: {
+      roleId: { in: Array.from(allRoleIds) },
+      permission: { name: permissionName }
     }
   });
 
-  if (!user || !user.isActive) return false;
+  return !!specificCheck;
+}
 
-  return user.roles.some(ur => ur.role.name === roleName);
+export async function hasAnyPermission(userId: string, requiredPermissions: string[]): Promise<boolean> {
+  const assignments = await prisma.employeeRoleAssignment.findMany({
+    where: { EmployeeProfile: { userId } },
+    include: { Role: true }
+  });
+
+  if (!assignments || assignments.length === 0) return false;
+  if (assignments.some(a => a.Role.name === "Platform Super Admin")) return true;
+
+  const allRoleIds = new Set<string>();
+  for (const a of assignments) {
+    await getDescendantRoleIds(a.roleId, allRoleIds);
+  }
+
+  const specificCheck = await prisma.rolePermission.findFirst({
+    where: {
+      roleId: { in: Array.from(allRoleIds) },
+      permission: { name: { in: requiredPermissions } }
+    }
+  });
+
+  return !!specificCheck;
+}
+
+export async function hasRole(userId: string, roleName: string): Promise<boolean> {
+  const assignments = await prisma.employeeRoleAssignment.findMany({
+    where: { EmployeeProfile: { userId } },
+    include: { Role: true }
+  });
+
+  // Strict check on direct role (for explicit role checking, usually prefer hasPermission)
+  return assignments.some(a => a.Role.name === roleName);
 }

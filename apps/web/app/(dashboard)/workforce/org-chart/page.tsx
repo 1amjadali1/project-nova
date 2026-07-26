@@ -48,8 +48,8 @@ export default async function OrgChartPage() {
             {node.children.length > 1 && (
               <div className="absolute top-2 left-0 right-0 h-px bg-slate-300 dark:bg-slate-600" 
                    style={{ 
-                     width: \`calc(100% - \${100 / node.children.length}%)\`,
-                     left: \`\${50 / node.children.length}%\`
+                     width: `calc(100% - ${100 / node.children.length}%)`,
+                     left: `${50 / node.children.length}%`
                    }}></div>
             )}
 

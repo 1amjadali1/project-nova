@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import StatusBadge from "./StatusBadge";
 import ActionButtons from "./ActionButtons";
 

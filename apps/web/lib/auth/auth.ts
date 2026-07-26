@@ -9,14 +9,14 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false, // Don't block login strictly for now
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     async sendResetPassword({ user, url, token }: { user: unknown, url: unknown, token: unknown }) {
       console.log("=========================================");
       console.log(`[MOCK EMAIL] Password Reset for ${user}`);
       console.log(`[MOCK EMAIL] Reset Link: ${url}`);
       console.log("=========================================");
     },
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     async sendVerificationEmail({ user, url, token }: { user: unknown, url: unknown, token: unknown }) {
       console.log("=========================================");
       console.log(`[MOCK EMAIL] Email Verification for ${user}`);

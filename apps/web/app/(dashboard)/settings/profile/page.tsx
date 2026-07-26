@@ -17,7 +17,7 @@ export default function ProfileSettingsPage() {
   if (data?.user?.id !== prevUserId) {
     setPrevUserId(data?.user?.id);
     if (data?.user) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const user = data.user as any;
       setFirstName(user.firstName || "");
       setLastName(user.lastName || "");
@@ -35,7 +35,7 @@ export default function ProfileSettingsPage() {
       firstName,
       lastName,
       phone,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     } as any);
 
     if (error) {
@@ -161,7 +161,7 @@ export default function ProfileSettingsPage() {
           <input
             id="org"
             type="text"
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             value={(data?.user as any)?.organizationId || ""}
             disabled
             className="w-full rounded-lg border border-slate-800 bg-slate-900 p-3 text-slate-500 cursor-not-allowed font-mono text-sm"

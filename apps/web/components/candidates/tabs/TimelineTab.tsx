@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 export default function TimelineTab({ timelineEvents }: { timelineEvents: any[] }) {
   if (!timelineEvents || timelineEvents.length === 0) {
     return (

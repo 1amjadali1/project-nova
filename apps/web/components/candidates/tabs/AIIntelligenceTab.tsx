@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 export default function AIIntelligenceTab({ candidate }: { candidate: any }) {
   const allResults = candidate.verifications.flatMap((req: any) => 
     (req.checks || []).flatMap((check: any) => 

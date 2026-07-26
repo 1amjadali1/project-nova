@@ -6,6 +6,9 @@ import Link from "next/link";
 import UploadZone from "@/components/documents/UploadZone";
 import DocumentAIControls from "@/components/documents/DocumentAIControls";
 import DocumentStatusBadge from "@/components/documents/DocumentStatusBadge";
+import CaseControlPanel from "@/components/verifications/CaseControlPanel";
+import CaseTimeline from "@/components/verifications/CaseTimeline";
+import { getEnterpriseSession } from "@/lib/auth/session";
 
 export default async function VerificationDetailsPage({
   params,
@@ -14,6 +17,14 @@ export default async function VerificationDetailsPage({
 }) {
   const { id } = await params;
   
+  const sessionData = await getEnterpriseSession();
+  if (!sessionData?.user) return null;
+  const profile = await prisma.employeeProfile.findUnique({
+    where: { userId: sessionData.user.id },
+    include: { EmployeeRoleAssignment: { include: { Role: true } } }
+  });
+  const myLevel = Math.max(...(profile?.EmployeeRoleAssignment.map(r => r.Role.hierarchyLevel) || [0]));
+
   const verification = await prisma.verificationRequest.findUnique({
     where: { id },
     include: {
@@ -25,6 +36,9 @@ export default async function VerificationDetailsPage({
           },
         }
       },
+      owner: {
+        include: { user: true }
+      }
     },
   });
 
@@ -39,14 +53,37 @@ export default async function VerificationDetailsPage({
           {verification.type.replace(/_/g, " ")}
         </h1>
         <p className="mt-2 text-slate-400">
-          Verification Request Details
+          Verification Request Details - Case ID: <span className="font-mono text-xs">{verification.id}</span>
         </p>
       </div>
+
+      <CaseControlPanel 
+        requestId={verification.id} 
+        currentStage={verification.currentStage} 
+        status={verification.status} 
+        myLevel={myLevel} 
+      />
 
       <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-xl">
         <h2 className="mb-6 text-xl font-semibold text-white">Request Information</h2>
         
-        <dl className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <dl className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <dt className="text-sm font-medium text-slate-400">Workflow Stage</dt>
+            <dd className="mt-2">
+              <span className="inline-flex items-center rounded-full bg-slate-800 px-2.5 py-0.5 text-sm font-semibold text-slate-300 border border-slate-700">
+                {verification.currentStage.replace(/_/g, " ")}
+              </span>
+            </dd>
+          </div>
+
+          <div>
+            <dt className="text-sm font-medium text-slate-400">Current Owner</dt>
+            <dd className="mt-2 text-slate-200">
+              {verification.owner ? `${verification.owner.user.firstName} ${verification.owner.user.lastName}` : <span className="italic text-slate-500">Unassigned</span>}
+            </dd>
+          </div>
+
           <div>
             <dt className="text-sm font-medium text-slate-400">Status</dt>
             <dd className="mt-2">
@@ -102,6 +139,8 @@ export default async function VerificationDetailsPage({
           </dd>
         </div>
       </div>
+
+      <CaseTimeline requestId={verification.id} />
 
       {/* Document Workflow Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
