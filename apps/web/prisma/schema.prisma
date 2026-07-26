@@ -65,6 +65,7 @@ model User {
   image          String?
   firstName      String
   lastName       String
+  phone          String?
   isActive       Boolean      @default(true)
   
   organizationId String

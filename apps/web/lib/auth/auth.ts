@@ -8,13 +8,31 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: false, // Don't block login strictly for now
+    async sendResetPassword({ user, url }: { user: any; url: string }) {
+      console.log("=========================================");
+      console.log(`[MOCK EMAIL] Password Reset for ${user.email}`);
+      console.log(`[MOCK EMAIL] Reset Link: ${url}`);
+      console.log("=========================================");
+    },
+    async sendVerificationEmail({ user, url }: { user: any; url: string }) {
+      console.log("=========================================");
+      console.log(`[MOCK EMAIL] Email Verification for ${user.email}`);
+      console.log(`[MOCK EMAIL] Verification Link: ${url}`);
+      console.log("=========================================");
+    },
   },
   user: {
     additionalFields: {
       firstName: { type: "string" },
       lastName: { type: "string" },
+      phone: { type: "string", required: false },
       isActive: { type: "boolean", defaultValue: true },
       organizationId: { type: "string" },
     },
+  },
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // 1 day
   },
 });
