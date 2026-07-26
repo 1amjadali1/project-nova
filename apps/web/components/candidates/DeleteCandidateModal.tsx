@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, useState, useEffect } from "react";
+import { useTransition, useState } from "react";
 import { deleteCandidate } from "@/app/actions/candidate";
 
 type Candidate = {

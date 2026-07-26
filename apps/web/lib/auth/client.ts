@@ -13,6 +13,8 @@ export const {
   updateUser,
   changePassword,
   sendVerificationEmail,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 } = authClient as any;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const forgetPassword = (authClient as any).forgetPassword;

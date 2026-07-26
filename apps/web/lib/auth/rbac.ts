@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-export async function hasPermission(userId: string, action: string, resource?: string): Promise<boolean> {
+export async function hasPermission(userId: string, action: string): Promise<boolean> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {

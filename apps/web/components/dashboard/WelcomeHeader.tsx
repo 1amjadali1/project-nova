@@ -25,7 +25,7 @@ export default function WelcomeHeader({ userName, organizationName }: WelcomeHea
           {greeting}, {userName}
         </h1>
         <p className="mt-1 text-slate-400">
-          Here is what's happening at <span className="font-semibold text-slate-300">{organizationName}</span> today.
+          Here is what&apos;s happening at <span className="font-semibold text-slate-300">{organizationName}</span> today.
         </p>
       </div>
       

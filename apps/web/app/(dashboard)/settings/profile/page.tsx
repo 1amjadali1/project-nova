@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSession, updateUser } from "@/lib/auth/client";
 
 export default function ProfileSettingsPage() {
@@ -12,15 +12,17 @@ export default function ProfileSettingsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  useEffect(() => {
+  const [prevUserId, setPrevUserId] = useState(data?.user?.id);
+  if (data?.user?.id !== prevUserId) {
+    setPrevUserId(data?.user?.id);
     if (data?.user) {
-      // Extract from the generic better-auth user object or from additionalFields
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const user = data.user as any;
       setFirstName(user.firstName || "");
       setLastName(user.lastName || "");
       setPhone(user.phone || "");
     }
-  }, [data]);
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +34,7 @@ export default function ProfileSettingsPage() {
       firstName,
       lastName,
       phone,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     if (error) {
@@ -149,6 +152,7 @@ export default function ProfileSettingsPage() {
           <input
             id="org"
             type="text"
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             value={(data?.user as any)?.organizationId || ""}
             disabled
             className="w-full rounded-lg border border-slate-800 bg-slate-900 p-3 text-slate-500 cursor-not-allowed font-mono text-sm"

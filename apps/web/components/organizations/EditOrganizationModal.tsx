@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { updateOrganization } from "@/app/actions/organization";
 
 type Organization = {
@@ -32,7 +32,9 @@ export default function EditOrganizationModal({
   const [pending, startTransition] = useTransition();
   const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-  useEffect(() => {
+  const [prevOrgId, setPrevOrgId] = useState(organization?.id);
+  if (organization?.id !== prevOrgId) {
+    setPrevOrgId(organization?.id);
     if (organization) {
       setName(organization.name);
       setSlug(organization.slug);
@@ -40,13 +42,15 @@ export default function EditOrganizationModal({
       setPhone(organization.phone ?? "");
       setWebsite(organization.website ?? "");
     }
-  }, [organization]);
+  }
 
-  useEffect(() => {
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
     if (!open) {
       setToastMessage(null);
     }
-  }, [open]);
+  }
 
   if (!open) return null;
 

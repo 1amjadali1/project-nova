@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import StatusBadge from "@/components/verifications/StatusBadge";
+import UploadZone from "@/components/documents/UploadZone";
+import DocumentPreviewWrapper from "@/app/(dashboard)/documents/DocumentPreviewWrapper";
 
 export default async function CandidateDetailsPage({
   params,
@@ -17,6 +19,10 @@ export default async function CandidateDetailsPage({
       verifications: {
         orderBy: { createdAt: "desc" },
       },
+      documents: {
+        where: { isDeleted: false },
+        orderBy: { createdAt: "desc" },
+      }
     },
   });
 
@@ -125,6 +131,29 @@ export default async function CandidateDetailsPage({
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+      </div>
+
+      <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-xl">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h2 className="text-xl font-semibold text-white">Candidate Documents</h2>
+        </div>
+        
+        <div className="mb-8">
+          <UploadZone candidateId={candidate.id} />
+        </div>
+
+        {candidate.documents.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-700 py-12">
+            <svg className="mb-3 h-10 w-10 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            <p className="font-medium text-slate-400">No documents uploaded yet.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <DocumentPreviewWrapper documents={candidate.documents} />
           </div>
         )}
       </div>

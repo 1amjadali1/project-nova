@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, useState, useEffect } from "react";
+import { useTransition, useState } from "react";
 import { deleteOrganization } from "@/app/actions/organization";
 
 type Organization = {
@@ -22,12 +22,13 @@ export default function DeleteOrganizationModal({
   const [pending, startTransition] = useTransition();
   const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-  useEffect(() => {
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
     if (!open) {
       setToastMessage(null);
     }
-  }, [open]);
-
+  }
   if (!open) return null;
 
   function handleDelete() {

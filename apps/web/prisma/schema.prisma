@@ -25,6 +25,8 @@ model Organization {
   candidates Candidate[]
   users      User[]
   roles      Role[]
+  documents  Document[]
+  aiJobs     AIJob[]
 }
 
 model Candidate {
@@ -39,6 +41,8 @@ model Candidate {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   
   verifications  VerificationRequest[]
+  documents      Document[]
+  aiJobs         AIJob[]
 
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
@@ -74,6 +78,12 @@ model User {
   roles          UserRole[]
   sessions       Session[]
   accounts       Account[]
+  
+  uploadedDocuments Document[]  @relation("UploadedDocuments")
+  verifiedDocuments Document[]  @relation("VerifiedDocuments")
+  
+  verifiedExtractions AIExtraction[] @relation("VerifiedExtractions")
+  performedAILogs     AIAuditLog[]   @relation("PerformedAILogs")
   
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
@@ -152,4 +162,108 @@ model Verification {
   expiresAt  DateTime
   createdAt  DateTime
   updatedAt  DateTime
+}
+
+model Document {
+  id                 String       @id @default(cuid())
+  documentType       String       // "Aadhaar", "PAN", "Passport", etc.
+  fileName           String       // Internal storage name
+  originalFileName   String       // The original uploaded file name
+  mimeType           String
+  fileSize           Int          // In bytes
+  storagePath        String
+  storageProvider    String       @default("SUPABASE")
+  status             String       @default("UPLOADED") // "UPLOADED", "PROCESSING", "OCR_COMPLETED", "VERIFIED", "REJECTED", "EXPIRED"
+  notes              String?
+  
+  candidateId        String
+  candidate          Candidate    @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  
+  organizationId     String
+  organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  uploadedById       String?
+  uploadedBy         User?        @relation("UploadedDocuments", fields: [uploadedById], references: [id], onDelete: SetNull)
+  
+  verifiedById       String?
+  verifiedBy         User?        @relation("VerifiedDocuments", fields: [verifiedById], references: [id], onDelete: SetNull)
+
+  aiJobs             AIJob[]
+
+  isDeleted          Boolean      @default(false)
+
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+}
+
+model AIJob {
+  id              String         @id @default(cuid())
+  
+  jobType         String         // OCR, DOCUMENT_CLASSIFICATION, RESUME_PARSING, etc.
+  status          String         @default("QUEUED") // QUEUED, PROCESSING, WAITING_FOR_REVIEW, COMPLETED, FAILED, CANCELLED
+  priority        Int            @default(0) // Higher number = higher priority
+  retryCount      Int            @default(0)
+  
+  startedAt       DateTime?
+  completedAt     DateTime?
+  errorMessage    String?
+  confidenceScore Float?
+  processingTime  Int?           // In milliseconds
+  
+  provider        String?        // e.g. "MOCK", "GOOGLE_VISION", "AZURE_DOCUMENT_INTELLIGENCE"
+  modelVersion    String?
+  rawText         String?        @db.Text
+  structuredJson  Json?
+  validationScore Float?
+  
+  documentId      String
+  document        Document       @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  candidateId     String
+  candidate       Candidate      @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  
+  organizationId  String
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  extractions     AIExtraction[]
+  auditLogs       AIAuditLog[]
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model AIExtraction {
+  id           String   @id @default(cuid())
+  
+  fieldName      String
+  fieldValue     String   @db.Text
+  confidence     Float
+  
+  validationError String?
+  isAutoVerified  Boolean  @default(false)
+  
+  verified       Boolean  @default(false)
+  verifiedById   String?
+  verifiedBy   User?    @relation("VerifiedExtractions", fields: [verifiedById], references: [id], onDelete: SetNull)
+  
+  jobId        String
+  job          AIJob    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model AIAuditLog {
+  id            String   @id @default(cuid())
+  
+  action        String   // CREATED, RETRIED, CANCELLED, COMPLETED, FAILED
+  notes         String?  @db.Text
+  
+  performedById String?
+  performedBy   User?    @relation("PerformedAILogs", fields: [performedById], references: [id], onDelete: SetNull)
+  
+  jobId         String
+  job           AIJob    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
 }

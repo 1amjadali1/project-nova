@@ -37,9 +37,13 @@ export default function NewUserForm({ roles, organizations }: Props) {
         setTimeout(() => {
           router.push("/users");
         }, 1500);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(error);
-        setToastMessage({ type: 'error', text: error.message || "Failed to create user." });
+        if (error instanceof Error) {
+          setToastMessage({ type: 'error', text: error.message || "Failed to create user." });
+        } else {
+          setToastMessage({ type: 'error', text: "Failed to create user." });
+        }
       }
     });
   }
