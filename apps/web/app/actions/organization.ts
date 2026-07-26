@@ -2,6 +2,9 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth/auth";
+import { headers } from "next/headers";
+import { hasRole } from "@/lib/auth/rbac";
 
 export async function createOrganization(formData: FormData) {
   const name = formData.get("name")?.toString().trim() ?? "";
@@ -13,6 +16,15 @@ export async function createOrganization(formData: FormData) {
   if (!name || !slug) {
     throw new Error("Organization name and slug are required.");
   }
+
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) throw new Error("Unauthorized");
+  
+  const [isAdmin] = await Promise.all([
+    hasRole(session.user.id, "SUPER_ADMIN")
+  ]);
+
+  if (!isAdmin) throw new Error("Forbidden: Super Admin only");
 
   await prisma.organization.create({
     data: {
@@ -32,6 +44,15 @@ export async function deleteOrganization(id: string) {
     throw new Error("Organization ID is required.");
   }
 
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) throw new Error("Unauthorized");
+  
+  const [isAdmin] = await Promise.all([
+    hasRole(session.user.id, "SUPER_ADMIN")
+  ]);
+
+  if (!isAdmin) throw new Error("Forbidden: Super Admin only");
+
   await prisma.organization.delete({
     where: { id },
   });
@@ -49,6 +70,15 @@ export async function updateOrganization(id: string, formData: FormData) {
   if (!name || !slug) {
     throw new Error("Organization name and slug are required.");
   }
+
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) throw new Error("Unauthorized");
+  
+  const [isAdmin] = await Promise.all([
+    hasRole(session.user.id, "SUPER_ADMIN")
+  ]);
+
+  if (!isAdmin) throw new Error("Forbidden: Super Admin only");
 
   await prisma.organization.update({
     where: { id },

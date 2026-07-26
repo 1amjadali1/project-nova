@@ -39,7 +39,7 @@ export class ProviderRouter {
       try {
         const instance = providerRegistry.getProvider(p.code);
         queue.push({ dbId: p.id, code: p.code, instance });
-      } catch (_err) {
+      } catch {
         console.warn(`Provider ${p.code} is in DB but missing from code registry.`);
       }
     }

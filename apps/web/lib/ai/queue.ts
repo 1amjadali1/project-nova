@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { validateExtraction } from "./engine/validator";
 import { aiManager } from "./manager/manager";
 import { VerificationEngine } from "../verification/engine";
+import { AuditAction, AIJobStatus } from "@prisma/client";
 
 export type AIJobType = 
   | "OCR" 
@@ -13,14 +14,6 @@ export type AIJobType =
   | "FACE_MATCH" 
   | "FRAUD_CHECK" 
   | "CUSTOM";
-
-export type AIJobStatus = 
-  | "QUEUED" 
-  | "PROCESSING" 
-  | "WAITING_FOR_REVIEW" 
-  | "COMPLETED" 
-  | "FAILED" 
-  | "CANCELLED";
 
 export async function createAIJob(
   documentId: string, 
@@ -71,7 +64,7 @@ export async function updateAIJobStatus(
       ...extraData,
       auditLogs: {
         create: {
-          action: status,
+          action: status as unknown as AuditAction,
           notes: notes || `Status updated to ${status}`,
           performedById: userId,
         }
@@ -183,7 +176,7 @@ export async function simulateAIJobProcessing(jobId: string) {
           completedAt: new Date(),
           auditLogs: {
             create: {
-              action: finalStatus,
+              action: finalStatus as unknown as AuditAction,
               notes: finalStatus === "COMPLETED" 
                 ? "Simulated processing finished successfully. Auto-verified." 
                 : "Simulated processing finished. Requires human review due to low confidence or validation errors.",

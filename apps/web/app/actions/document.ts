@@ -6,23 +6,25 @@ import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/auth/rbac";
 import { uploadDocument, getSignedUrl } from "@/lib/storage/supabase";
 import { revalidatePath } from "next/cache";
+import { DocumentStatus } from "@prisma/client";
 
 export async function uploadCandidateDocument(candidateId: string, formData: FormData) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error("Unauthorized");
 
-  // Validate candidate belongs to user's org
-  const candidate = await prisma.candidate.findUnique({
-    where: { id: candidateId },
-    select: { organizationId: true },
-  });
+  // Validate candidate and permission in parallel
+  const [candidate, hasPerm] = await Promise.all([
+    prisma.candidate.findUnique({
+      where: { id: candidateId },
+      select: { organizationId: true },
+    }),
+    hasPermission(session.user.id, "documents:write")
+  ]);
 
   if (!candidate) throw new Error("Candidate not found");
   if (candidate.organizationId !== session.user.organizationId) {
     throw new Error("Unauthorized: Cross-tenant access denied");
   }
-
-  const hasPerm = await hasPermission(session.user.id, "documents:write");
   if (!hasPerm) throw new Error("Forbidden: Missing documents:write permission");
 
   const file = formData.get("file") as File;
@@ -71,16 +73,17 @@ export async function softDeleteDocument(documentId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error("Unauthorized");
 
-  const document = await prisma.document.findUnique({
-    where: { id: documentId },
-  });
+  const [document, hasPerm] = await Promise.all([
+    prisma.document.findUnique({
+      where: { id: documentId },
+    }),
+    hasPermission(session.user.id, "documents:write")
+  ]);
 
   if (!document) throw new Error("Document not found");
   if (document.organizationId !== session.user.organizationId) {
     throw new Error("Unauthorized: Cross-tenant access denied");
   }
-
-  const hasPerm = await hasPermission(session.user.id, "documents:write");
   if (!hasPerm) throw new Error("Forbidden: Missing documents:write permission");
 
   await prisma.document.update({
@@ -99,16 +102,17 @@ export async function getDocumentDownloadUrl(documentId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error("Unauthorized");
 
-  const document = await prisma.document.findUnique({
-    where: { id: documentId },
-  });
+  const [document, hasPerm] = await Promise.all([
+    prisma.document.findUnique({
+      where: { id: documentId },
+    }),
+    hasPermission(session.user.id, "documents:read")
+  ]);
 
   if (!document || document.isDeleted) throw new Error("Document not found");
   if (document.organizationId !== session.user.organizationId) {
     throw new Error("Unauthorized: Cross-tenant access denied");
   }
-
-  const hasPerm = await hasPermission(session.user.id, "documents:read");
   if (!hasPerm) throw new Error("Forbidden: Missing documents:read permission");
 
   const { url, error } = await getSignedUrl(document.storagePath, 3600);
@@ -121,22 +125,23 @@ export async function updateDocumentStatus(documentId: string, status: string, n
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error("Unauthorized");
 
-  const document = await prisma.document.findUnique({
-    where: { id: documentId },
-  });
+  const [document, hasPerm] = await Promise.all([
+    prisma.document.findUnique({
+      where: { id: documentId },
+    }),
+    hasPermission(session.user.id, "documents:write")
+  ]);
 
   if (!document) throw new Error("Document not found");
   if (document.organizationId !== session.user.organizationId) {
     throw new Error("Unauthorized: Cross-tenant access denied");
   }
-
-  const hasPerm = await hasPermission(session.user.id, "documents:write");
   if (!hasPerm) throw new Error("Forbidden: Missing documents:write permission");
 
   const updated = await prisma.document.update({
     where: { id: documentId },
     data: { 
-      status,
+      status: status as DocumentStatus,
       notes: notes !== undefined ? notes : document.notes,
       ...(status === "VERIFIED" ? { verifiedById: session.user.id } : {})
     },

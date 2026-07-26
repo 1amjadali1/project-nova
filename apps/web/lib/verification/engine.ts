@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { MatchingEngine, MatchDetail } from "./matching";
 import { RiskEngine } from "./risk";
 import { RecommendationEngine } from "./recommendation";
+import { VerificationStatus } from "@prisma/client";
 
 export class VerificationEngine {
 
@@ -61,7 +62,7 @@ export class VerificationEngine {
         candidateId: candidate.id,
         documentId: job.documentId,
         organizationId: job.organizationId,
-        overallStatus: status,
+        overallStatus: status as unknown as VerificationStatus,
         riskScore: score,
         riskLevel: level,
         confidence: job.confidenceScore || 0,

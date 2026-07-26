@@ -20,7 +20,7 @@ export default function ProviderControls({ providerId, enabled, priority, isAdmi
     setIsProcessing(true);
     try {
       await toggleProviderStatus(providerId, !enabled);
-    } catch (_err) {
+    } catch {
       alert("Failed to toggle provider");
     } finally {
       setIsProcessing(false);
@@ -31,7 +31,7 @@ export default function ProviderControls({ providerId, enabled, priority, isAdmi
     setIsProcessing(true);
     try {
       await updateProviderPriority(providerId, priority + increment);
-    } catch (_err) {
+    } catch {
       alert("Failed to update priority");
     } finally {
       setIsProcessing(false);

@@ -3,6 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth/auth";
+import { headers } from "next/headers";
+import { hasPermission } from "@/lib/auth/rbac";
 
 export async function createUser(formData: FormData) {
   const firstName = formData.get("firstName") as string;
@@ -16,6 +18,18 @@ export async function createUser(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) throw new Error("Unauthorized");
+  
+  const [hasPerm] = await Promise.all([
+    hasPermission(session.user.id, "users:write")
+  ]);
+
+  if (!hasPerm) throw new Error("Forbidden: Missing users:write permission");
+
+  // Force organizationId to match the logged-in user to prevent cross-tenant user creation
+  const safeOrgId = session.user.organizationId;
+
   // Use Better Auth's sign up API internally to hash password and create User/Account
   const res = await auth.api.signUpEmail({
     body: {
@@ -24,7 +38,7 @@ export async function createUser(formData: FormData) {
       name: `${firstName} ${lastName}`,
       firstName,
       lastName,
-      organizationId,
+      organizationId: safeOrgId,
     },
   });
 
@@ -53,6 +67,20 @@ export async function updateUser(id: string, formData: FormData) {
     throw new Error("Missing required fields");
   }
 
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) throw new Error("Unauthorized");
+  
+  const [targetUser, hasPerm] = await Promise.all([
+    prisma.user.findUnique({ where: { id }, select: { organizationId: true } }),
+    hasPermission(session.user.id, "users:write")
+  ]);
+
+  if (!targetUser) throw new Error("User not found");
+  if (targetUser.organizationId !== session.user.organizationId) {
+    throw new Error("Unauthorized: Cross-tenant access denied");
+  }
+  if (!hasPerm) throw new Error("Forbidden: Missing users:write permission");
+
   // Update user basic info
   await prisma.user.update({
     where: { id },
@@ -80,6 +108,20 @@ export async function updateUser(id: string, formData: FormData) {
 }
 
 export async function deleteUser(id: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) throw new Error("Unauthorized");
+  
+  const [targetUser, hasPerm] = await Promise.all([
+    prisma.user.findUnique({ where: { id }, select: { organizationId: true } }),
+    hasPermission(session.user.id, "users:write")
+  ]);
+
+  if (!targetUser) throw new Error("User not found");
+  if (targetUser.organizationId !== session.user.organizationId) {
+    throw new Error("Unauthorized: Cross-tenant access denied");
+  }
+  if (!hasPerm) throw new Error("Forbidden: Missing users:write permission");
+
   await prisma.user.delete({
     where: { id },
   });
@@ -88,6 +130,20 @@ export async function deleteUser(id: string) {
 }
 
 export async function deactivateUser(id: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) throw new Error("Unauthorized");
+  
+  const [targetUser, hasPerm] = await Promise.all([
+    prisma.user.findUnique({ where: { id }, select: { organizationId: true } }),
+    hasPermission(session.user.id, "users:write")
+  ]);
+
+  if (!targetUser) throw new Error("User not found");
+  if (targetUser.organizationId !== session.user.organizationId) {
+    throw new Error("Unauthorized: Cross-tenant access denied");
+  }
+  if (!hasPerm) throw new Error("Forbidden: Missing users:write permission");
+
   await prisma.user.update({
     where: { id },
     data: { isActive: false },
@@ -98,6 +154,20 @@ export async function deactivateUser(id: string) {
 }
 
 export async function activateUser(id: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) throw new Error("Unauthorized");
+  
+  const [targetUser, hasPerm] = await Promise.all([
+    prisma.user.findUnique({ where: { id }, select: { organizationId: true } }),
+    hasPermission(session.user.id, "users:write")
+  ]);
+
+  if (!targetUser) throw new Error("User not found");
+  if (targetUser.organizationId !== session.user.organizationId) {
+    throw new Error("Unauthorized: Cross-tenant access denied");
+  }
+  if (!hasPerm) throw new Error("Forbidden: Missing users:write permission");
+
   await prisma.user.update({
     where: { id },
     data: { isActive: true },
@@ -108,6 +178,19 @@ export async function activateUser(id: string) {
 }
 
 export async function inviteUser(email: string, organizationId: string, roleId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) throw new Error("Unauthorized");
+  
+  const [hasPerm] = await Promise.all([
+    hasPermission(session.user.id, "users:write")
+  ]);
+
+  if (!hasPerm) throw new Error("Forbidden: Missing users:write permission");
+  
+  if (organizationId !== session.user.organizationId) {
+    throw new Error("Unauthorized: Cross-tenant access denied");
+  }
+
   // Placeholder for future email invitation logic
   console.log(`Inviting user ${email} to org ${organizationId} with role ${roleId}`);
   return { success: true };

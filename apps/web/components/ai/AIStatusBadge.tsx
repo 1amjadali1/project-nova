@@ -1,5 +1,5 @@
 import { CheckCircle2, Clock, XCircle, AlertCircle, RefreshCw, StopCircle } from "lucide-react";
-import { AIJobStatus } from "@/lib/ai/queue";
+import { AIJobStatus } from "@prisma/client";
 
 interface AIStatusBadgeProps {
   status: AIJobStatus | string;

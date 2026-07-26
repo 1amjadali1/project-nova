@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader2, AlertCircle, Download } from "lucide-react";
 import { getDocumentDownloadUrl } from "@/app/actions/document";
+import Image from "next/image";
 
 interface DocumentViewerProps {
   documentId: string;
@@ -69,11 +70,13 @@ export default function DocumentViewer({ documentId, mimeType, fileName }: Docum
 
   if (isImage) {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-xl bg-slate-900 overflow-auto">
-        <img 
+      <div className="relative flex h-full w-full items-center justify-center rounded-xl bg-slate-900 overflow-hidden">
+        <Image 
           src={url} 
           alt={fileName} 
-          className="max-h-full max-w-full object-contain"
+          fill
+          unoptimized
+          className="object-contain"
         />
       </div>
     );

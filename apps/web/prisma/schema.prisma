@@ -8,6 +8,54 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum VerificationStatus {
+  VERIFIED
+  PARTIALLY_VERIFIED
+  NEEDS_REVIEW
+  REJECTED
+}
+
+enum ProviderStatus {
+  HEALTHY
+  WARNING
+  OFFLINE
+}
+
+enum RequestStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum DocumentStatus {
+  UPLOADED
+  PROCESSING
+  OCR_COMPLETED
+  VERIFIED
+  REJECTED
+  EXPIRED
+}
+
+enum AIJobStatus {
+  QUEUED
+  PROCESSING
+  WAITING_FOR_REVIEW
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum AuditAction {
+  CREATED
+  RETRIED
+  CANCELLED
+  COMPLETED
+  FAILED
+  PROCESSING
+  WAITING_FOR_REVIEW
+}
+
 model Organization {
   id      String  @id @default(cuid())
   name    String
@@ -62,7 +110,7 @@ model Candidate {
 model VerificationResult {
   id String @id @default(cuid())
 
-  overallStatus String
+  overallStatus VerificationStatus
   riskScore     Int
   riskLevel     String
   confidence    Float
@@ -100,14 +148,14 @@ model VerificationRule {
 }
 
 model AIProvider {
-  id             String  @id @default(cuid())
+  id             String         @id @default(cuid())
   organizationId String
   name           String
   code           String
   version        String
-  status         String  @default("HEALTHY")
-  priority       Int     @default(0)
-  enabled        Boolean @default(true)
+  status         ProviderStatus @default(HEALTHY)
+  priority       Int            @default(0)
+  enabled        Boolean        @default(true)
 
   supportedFeatures String[]
 
@@ -144,9 +192,9 @@ model AIProviderMetric {
 }
 
 model VerificationRequest {
-  id     String  @id @default(cuid())
+  id     String        @id @default(cuid())
   type   String // e.g. "CRIMINAL_RECORD", "EMPLOYMENT", "EDUCATION"
-  status String  @default("PENDING") // e.g. "PENDING", "IN_PROGRESS", "COMPLETED", "FAILED"
+  status RequestStatus @default(PENDING) // e.g. "PENDING", "IN_PROGRESS", "COMPLETED", "FAILED"
   notes  String?
 
   candidateId String
@@ -260,15 +308,15 @@ model Verification {
 }
 
 model Document {
-  id               String  @id @default(cuid())
+  id               String         @id @default(cuid())
   documentType     String // "Aadhaar", "PAN", "Passport", etc.
   fileName         String // Internal storage name
   originalFileName String // The original uploaded file name
   mimeType         String
   fileSize         Int // In bytes
   storagePath      String
-  storageProvider  String  @default("SUPABASE")
-  status           String  @default("UPLOADED") // "UPLOADED", "PROCESSING", "OCR_COMPLETED", "VERIFIED", "REJECTED", "EXPIRED"
+  storageProvider  String         @default("SUPABASE")
+  status           DocumentStatus @default(UPLOADED) // "UPLOADED", "PROCESSING", "OCR_COMPLETED", "VERIFIED", "REJECTED", "EXPIRED"
   notes            String?
 
   candidateId String
@@ -296,9 +344,9 @@ model AIJob {
   id String @id @default(cuid())
 
   jobType    String // OCR, DOCUMENT_CLASSIFICATION, RESUME_PARSING, etc.
-  status     String @default("QUEUED") // QUEUED, PROCESSING, WAITING_FOR_REVIEW, COMPLETED, FAILED, CANCELLED
-  priority   Int    @default(0) // Higher number = higher priority
-  retryCount Int    @default(0)
+  status     AIJobStatus @default(QUEUED) // QUEUED, PROCESSING, WAITING_FOR_REVIEW, COMPLETED, FAILED, CANCELLED
+  priority   Int         @default(0) // Higher number = higher priority
+  retryCount Int         @default(0)
 
   startedAt       DateTime?
   completedAt     DateTime?
@@ -357,8 +405,8 @@ model AIExtraction {
 model AIAuditLog {
   id String @id @default(cuid())
 
-  action String // CREATED, RETRIED, CANCELLED, COMPLETED, FAILED
-  notes  String? @db.Text
+  action AuditAction // CREATED, RETRIED, CANCELLED, COMPLETED, FAILED, PROCESSING, WAITING_FOR_REVIEW
+  notes  String?     @db.Text
 
   performedById String?
   performedBy   User?   @relation("PerformedAILogs", fields: [performedById], references: [id], onDelete: SetNull)

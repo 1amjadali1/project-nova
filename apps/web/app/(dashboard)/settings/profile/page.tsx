@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSession, updateUser } from "@/lib/auth/client";
+import Image from "next/image";
 
 export default function ProfileSettingsPage() {
   const { data, isPending } = useSession();
@@ -72,7 +73,15 @@ export default function ProfileSettingsPage() {
         <div className="flex items-center gap-6 mb-8">
           <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center">
             {data?.user?.image ? (
-              <img src={data.user.image} alt="Profile" className="h-full w-full object-cover" />
+              <div className="relative h-full w-full">
+                <Image 
+                  src={data.user.image} 
+                  alt="Profile" 
+                  fill
+                  unoptimized
+                  className="object-cover" 
+                />
+              </div>
             ) : (
               <span className="text-2xl font-semibold text-slate-500">
                 {firstName?.charAt(0)}{lastName?.charAt(0)}

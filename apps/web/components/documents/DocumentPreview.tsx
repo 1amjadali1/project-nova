@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { X, Loader2, Download, AlertCircle } from "lucide-react";
 import { getDocumentDownloadUrl } from "@/app/actions/document";
+import Image from "next/image";
 
 interface DocumentPreviewProps {
   documentId: string;
@@ -90,11 +91,13 @@ export default function DocumentPreview({ documentId, mimeType, fileName, onClos
                 title={fileName}
               />
             ) : isImage ? (
-              <div className="h-full w-full flex items-center justify-center overflow-auto p-4">
-                <img 
+              <div className="relative h-full w-full flex items-center justify-center overflow-hidden p-4">
+                <Image 
                   src={url} 
                   alt={fileName} 
-                  className="max-h-full max-w-full object-contain rounded-lg"
+                  fill
+                  unoptimized
+                  className="object-contain rounded-lg"
                 />
               </div>
             ) : (
