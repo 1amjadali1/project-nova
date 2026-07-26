@@ -34,3 +34,20 @@ export async function hasPermission(userId: string, action: string): Promise<boo
     return false;
   });
 }
+
+export async function hasRole(userId: string, roleName: string): Promise<boolean> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      roles: {
+        include: {
+          role: true
+        }
+      }
+    }
+  });
+
+  if (!user || !user.isActive) return false;
+
+  return user.roles.some(ur => ur.role.name === roleName);
+}

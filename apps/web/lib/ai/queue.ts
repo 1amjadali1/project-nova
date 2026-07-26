@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { MockOCRProvider } from "./engine/providers/mock";
 import { validateExtraction } from "./engine/validator";
+import { aiManager } from "./manager/manager";
 
 export type AIJobType = 
   | "OCR" 
@@ -131,12 +131,11 @@ export async function simulateAIJobProcessing(jobId: string) {
       throw new Error("Connection to OCR engine timed out after 5000ms");
     }
 
-    const provider = new MockOCRProvider();
-    
-    // Simulate processing
-    const ocrResult = await provider.processDocument(
-      job.documentId, 
-      job.document.storagePath, 
+    // Execute through AI Manager (handles failover and telemetry automatically)
+    const { result: ocrResult, providerDbId } = await aiManager.executeOcr(
+      job.organizationId,
+      job.documentId,
+      job.document.storagePath,
       job.document.documentType
     );
 
@@ -173,6 +172,7 @@ export async function simulateAIJobProcessing(jobId: string) {
         data: {
           status: finalStatus,
           provider: ocrResult.provider,
+          providerId: providerDbId,
           modelVersion: ocrResult.modelVersion,
           rawText: ocrResult.rawText,
           structuredJson: JSON.parse(JSON.stringify(ocrResult.structuredData)), // Safe serialization

@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { BrainCircuit, ListOrdered, CheckCircle2, XCircle, Clock, Zap, AlertCircle } from "lucide-react";
+import { BrainCircuit, ListOrdered, CheckCircle2, XCircle, Clock, Zap, AlertCircle, Server } from "lucide-react";
 import Link from "next/link";
 import AIQueueCard from "@/components/ai/AIQueueCard";
 import AIJobTable from "@/components/ai/AIJobTable";
@@ -68,7 +68,13 @@ export default async function AIDashboardPage() {
             Monitor background processing pipelines and OCR extractions.
           </p>
         </div>
-        <div>
+        <div className="flex items-center gap-3">
+          <Link 
+            href="/ai/providers"
+            className="rounded-lg bg-slate-900 border border-slate-700 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 transition flex items-center gap-2"
+          >
+            <Server className="h-4 w-4" /> Manage Providers
+          </Link>
           <Link 
             href="/ai/jobs"
             className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition"
