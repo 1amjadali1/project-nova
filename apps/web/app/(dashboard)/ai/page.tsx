@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { BrainCircuit, ListOrdered, CheckCircle2, XCircle, Clock, Zap, AlertCircle, Server } from "lucide-react";
+import { BrainCircuit, ListOrdered, CheckCircle2, XCircle, Clock, Zap, AlertCircle, Server, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import AIQueueCard from "@/components/ai/AIQueueCard";
 import AIJobTable from "@/components/ai/AIJobTable";
@@ -69,6 +69,12 @@ export default async function AIDashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <Link 
+            href="/verification-engine"
+            className="rounded-lg bg-indigo-900/30 border border-indigo-700/50 px-4 py-2 text-sm font-medium text-indigo-300 hover:bg-indigo-900/50 transition flex items-center gap-2"
+          >
+            <ShieldCheck className="h-4 w-4" /> Verification Engine
+          </Link>
           <Link 
             href="/ai/providers"
             className="rounded-lg bg-slate-900 border border-slate-700 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 transition flex items-center gap-2"

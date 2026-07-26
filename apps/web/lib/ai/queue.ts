@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { validateExtraction } from "./engine/validator";
 import { aiManager } from "./manager/manager";
+import { VerificationEngine } from "../verification/engine";
 
 export type AIJobType = 
   | "OCR" 
@@ -191,6 +192,14 @@ export async function simulateAIJobProcessing(jobId: string) {
         }
       });
     });
+
+    if (finalStatus === "COMPLETED") {
+      try {
+        await VerificationEngine.runVerification(jobId);
+      } catch (verificationError) {
+        console.error(`[AIQueue] Verification Engine failed for Job ${jobId}:`, verificationError);
+      }
+    }
 
   } catch (error) {
     const processingTime = Date.now() - startMs;

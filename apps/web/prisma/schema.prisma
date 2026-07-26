@@ -22,12 +22,14 @@ model Organization {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  candidates  Candidate[]
-  users       User[]
-  roles       Role[]
-  documents   Document[]
-  aiJobs      AIJob[]
-  aiproviders AIProvider[]
+  candidates          Candidate[]
+  users               User[]
+  roles               Role[]
+  documents           Document[]
+  aiJobs              AIJob[]
+  aiproviders         AIProvider[]
+  verificationResults VerificationResult[]
+  verificationRules   VerificationRule[]
 }
 
 model Candidate {
@@ -38,6 +40,10 @@ model Candidate {
   phone     String?
   isActive  Boolean @default(true)
 
+  dateOfBirth   DateTime? @db.Date
+  panNumber     String?
+  aadhaarNumber String?
+
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
@@ -45,10 +51,52 @@ model Candidate {
   documents     Document[]
   jobs          AIJob[]
 
+  verificationResults VerificationResult[]
+
   aiProviders AIProvider[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model VerificationResult {
+  id String @id @default(cuid())
+
+  overallStatus String
+  riskScore     Int
+  riskLevel     String
+  confidence    Float
+
+  matchedFields    Json
+  mismatchedFields Json
+
+  recommendations String[]
+  explanation     String?  @db.Text
+
+  candidateId    String
+  candidate      Candidate    @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  documentId     String
+  document       Document     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  jobId          String?      @unique
+  job            AIJob?       @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationRule {
+  id             String  @id @default(cuid())
+  organizationId String
+  documentType   String
+  fieldName      String
+  mismatchScore  Int
+  mustMatch      Boolean @default(false)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, documentType, fieldName])
 }
 
 model AIProvider {
@@ -239,8 +287,9 @@ model Document {
 
   isDeleted Boolean @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  verificationResults VerificationResult[]
 }
 
 model AIJob {
@@ -277,6 +326,8 @@ model AIJob {
 
   extractions AIExtraction[]
   auditLogs   AIAuditLog[]
+
+  verificationResult VerificationResult?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
