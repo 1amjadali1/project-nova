@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import EditCandidateModal from "./EditCandidateModal";
 import DeleteCandidateModal from "./DeleteCandidateModal";
 
@@ -25,7 +27,13 @@ export default function ActionButtons({ candidate, organizations }: Props) {
 
   return (
     <>
-      <div className="flex justify-center gap-2">
+      <div className="flex justify-end gap-2">
+        <Link
+          href={`/candidates/${candidate.id}`}
+          className="rounded-lg bg-cyan-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-cyan-500"
+        >
+          Workspace
+        </Link>
         <button
           onClick={() => setIsEditOpen(true)}
           className="rounded-lg bg-slate-800 px-3 py-1.5 text-sm font-medium text-cyan-400 transition hover:bg-slate-700"

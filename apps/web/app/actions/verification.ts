@@ -10,7 +10,11 @@ import { revalidatePath } from "next/cache";
 export async function createVerification(formData: FormData) {
   const type = formData.get("type") as string;
   const candidateId = formData.get("candidateId") as string;
+  const priorityRaw = formData.get("priority") as string;
   const notes = formData.get("notes") as string;
+
+  const validPriorities = ["LOW", "NORMAL", "HIGH", "URGENT"] as const;
+  const priority = validPriorities.includes(priorityRaw as typeof validPriorities[number]) ? priorityRaw as typeof validPriorities[number] : "NORMAL";
 
   if (!type || !candidateId) {
     throw new Error("Missing required fields");
@@ -38,12 +42,16 @@ export async function createVerification(formData: FormData) {
       type,
       candidateId,
       status: "PENDING",
+      priority,
       notes: notes || null,
     },
   });
 
   revalidatePath("/verifications");
   revalidatePath(`/candidates/${candidateId}`);
+
+  const { redirect } = await import("next/navigation");
+  redirect("/verifications");
 }
 
 export async function updateVerification(id: string, formData: FormData) {

@@ -16,9 +16,8 @@ export default function DocumentAIControls({ documentId }: DocumentAIControlsPro
   const handleSimulate = async () => {
     setIsProcessing(true);
     try {
-      // For testing, default to OCR
-      const job = await createSimulatedAIJob(documentId, "OCR");
-      router.push(`/ai/jobs/${job.id}`);
+      await createSimulatedAIJob(documentId, "OCR");
+      router.refresh();
     } catch (err) {
       console.error(err);
       alert("Failed to create AI Job");
@@ -33,7 +32,7 @@ export default function DocumentAIControls({ documentId }: DocumentAIControlsPro
       className="w-full flex items-center justify-center gap-2 rounded-lg bg-cyan-600/10 border border-cyan-500/20 px-4 py-3 text-sm font-medium text-cyan-400 hover:bg-cyan-600/20 transition disabled:opacity-50"
     >
       <BrainCircuit className={`h-4 w-4 ${isProcessing ? "animate-pulse" : ""}`} />
-      {isProcessing ? "Queueing..." : "Simulate OCR Processing"}
+      {isProcessing ? "Queueing..." : "Start AI Processing"}
     </button>
   );
 }

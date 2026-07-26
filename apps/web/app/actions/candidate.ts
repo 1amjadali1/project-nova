@@ -29,7 +29,7 @@ export async function createCandidate(formData: FormData) {
   // Force organizationId to match the logged-in user
   const forcedOrgId = session.user.organizationId;
 
-  await prisma.candidate.create({
+  const newCandidate = await prisma.candidate.create({
     data: {
       firstName,
       lastName,
@@ -40,6 +40,9 @@ export async function createCandidate(formData: FormData) {
   });
 
   revalidatePath("/candidates");
+  // Important: next/navigation redirect must be used
+  const { redirect } = await import("next/navigation");
+  redirect(`/candidates/${newCandidate.id}`);
 }
 
 export async function updateCandidate(id: string, formData: FormData) {

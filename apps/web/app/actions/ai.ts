@@ -4,7 +4,9 @@ import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/auth/rbac";
-import { createAIJob as baseCreateJob, cancelAIJob as baseCancelJob, retryAIJob as baseRetryJob, simulateAIJobProcessing, AIJobType } from "@/lib/ai/queue";
+import { createAIJob as baseCreateJob, cancelAIJob as baseCancelJob, retryAIJob as baseRetryJob, AIJobType } from "@/lib/ai/queue";
+import { Dispatcher } from "@/lib/jobs/dispatcher";
+import { JobType } from "@/lib/jobs/types";
 import { revalidatePath } from "next/cache";
 
 export async function createSimulatedAIJob(documentId: string, jobType: string) {
@@ -34,8 +36,14 @@ export async function createSimulatedAIJob(documentId: string, jobType: string) 
     session.user.id
   );
 
-  // Trigger background simulation (don't await it so it runs async)
-  simulateAIJobProcessing(job.id);
+  // Trigger background job
+  await Dispatcher.dispatch(JobType.OCR_PROCESS, { jobId: job.id });
+
+  // Update document status to PROCESSING
+  await prisma.document.update({
+    where: { id: documentId },
+    data: { status: "PROCESSING" }
+  });
 
   revalidatePath(`/documents/${documentId}`);
   revalidatePath("/ai/jobs");
@@ -98,8 +106,8 @@ export async function retryAIJobAction(jobId: string) {
 
   await baseRetryJob(jobId, session.user.id);
   
-  // Trigger simulation again
-  simulateAIJobProcessing(jobId);
+  // Trigger background job
+  await Dispatcher.dispatch(JobType.OCR_PROCESS, { jobId });
 
   revalidatePath(`/ai/jobs/${jobId}`);
   revalidatePath(`/documents/${job.documentId}`);

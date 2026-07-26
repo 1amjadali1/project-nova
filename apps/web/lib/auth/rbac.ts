@@ -20,6 +20,12 @@ export async function hasPermission(userId: string, action: string): Promise<boo
     return false;
   }
 
+  // SUPER_ADMIN automatically has unrestricted access to all permissions
+  const isSuperAdmin = user.roles.some((ur) => ur.role.name === "SUPER_ADMIN");
+  if (isSuperAdmin) {
+    return true;
+  }
+
   // Flatten permissions across all roles
   const permissions = user.roles.flatMap((ur) => ur.role.permissions);
 

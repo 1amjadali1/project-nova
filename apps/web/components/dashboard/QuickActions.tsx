@@ -21,7 +21,7 @@ export default function QuickActions() {
     },
     {
       name: "Invite User",
-      href: "/users/invite",
+      href: "/users/new",
       icon: Send,
       color: "text-green-400",
       bg: "bg-green-500/10",

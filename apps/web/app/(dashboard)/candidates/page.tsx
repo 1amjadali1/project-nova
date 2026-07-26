@@ -60,6 +60,14 @@ export default async function CandidatesPage({
         organization: {
           select: { id: true, name: true },
         },
+        verifications: {
+          include: {
+            client: true,
+            package: true,
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 1, // Get the most recent active request for listing
+        }
       },
     }),
     prisma.candidate.count({ where }),

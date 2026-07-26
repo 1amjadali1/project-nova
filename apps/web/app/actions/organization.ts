@@ -37,6 +37,9 @@ export async function createOrganization(formData: FormData) {
   });
 
   revalidatePath("/organizations");
+
+  const { redirect } = await import("next/navigation");
+  redirect("/organizations");
 }
 
 export async function deleteOrganization(id: string) {

@@ -57,7 +57,8 @@ export default async function DashboardPage() {
     recentCandidates,
     recentVerifications,
     pipelineRunningCount,
-    pipelineCompletedCount
+    pipelineCompletedCount,
+    workQueueItems
   ] = await Promise.all([
     isSuperAdmin ? prisma.organization.count() : Promise.resolve(0),
     prisma.candidate.count({ where: whereClause }),
@@ -98,6 +99,24 @@ export default async function DashboardPage() {
         verifications: { some: { status: "COMPLETED" } },
       },
     }),
+
+    // Work Queue (Top Priority)
+    prisma.verificationRequest.findMany({
+      where: {
+        ...verificationWhereClause,
+        status: { in: ["PENDING", "IN_PROGRESS"] }
+      },
+      orderBy: [
+        { priority: 'desc' }, // URGENT > NORMAL > LOW (alphabetical? No, wait. Prisma sorts enums based on declaration order! LOW, NORMAL, HIGH, URGENT. So 'desc' will put URGENT first.)
+        { createdAt: 'asc' }
+      ],
+      take: 5,
+      include: {
+        candidate: {
+          select: { firstName: true, lastName: true }
+        }
+      }
+    })
   ]);
 
   const counts = {
@@ -152,7 +171,7 @@ export default async function DashboardPage() {
   const slaMetrics = {
     averageTime: "2.4 Days",
     pendingToday: Math.floor(pipelineRunningCount * 0.2),
-    overdueCases: Math.floor(pipelineRunningCount * 0.1),
+    overdueCases: workQueueItems.filter(i => i.priority === "URGENT").length, // Show urgent as overdue/attention
     completedToday: 5,
   };
 
@@ -186,7 +205,7 @@ export default async function DashboardPage() {
           <VerificationChart />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <WorkQueue />
+            <WorkQueue items={workQueueItems} />
             <QuickActions />
           </div>
         </div>

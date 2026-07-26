@@ -2,6 +2,7 @@
 
 import { createVerification } from "@/app/actions/verification";
 import { useRef, useState, useTransition } from "react";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type Props = {
   candidates: { id: string; firstName: string; lastName: string }[];
@@ -23,6 +24,9 @@ export default function NewVerificationForm({ candidates }: Props) {
         setToastMessage({ type: 'success', text: "Verification requested successfully." });
         setTimeout(() => setToastMessage(null), 3000);
       } catch (error) {
+        if (isRedirectError(error)) {
+          throw error;
+        }
         console.error(error);
         setToastMessage({ type: 'error', text: "Failed to request verification." });
       }
@@ -91,6 +95,23 @@ export default function NewVerificationForm({ candidates }: Props) {
               <option value="EDUCATION">Education Verification</option>
               <option value="REFERENCE">Reference Check</option>
               <option value="IDENTITY">Identity Verification</option>
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="new-priority" className="mb-2 block text-sm font-medium text-slate-300">Priority *</label>
+            <select
+              id="new-priority"
+              name="priority"
+              defaultValue="NORMAL"
+              className="w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              required
+              aria-required="true"
+            >
+              <option value="LOW">Low</option>
+              <option value="NORMAL">Normal (Default)</option>
+              <option value="HIGH">High</option>
+              <option value="URGENT">Urgent</option>
             </select>
           </div>
 

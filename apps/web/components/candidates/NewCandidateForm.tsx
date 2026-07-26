@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { createCandidate } from "@/app/actions/candidate";
 import { useRef, useState, useTransition } from "react";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type Props = {
   organizations: { id: string; name: string }[];
@@ -23,6 +25,9 @@ export default function NewCandidateForm({ organizations }: Props) {
         setToastMessage({ type: 'success', text: "Candidate created successfully." });
         setTimeout(() => setToastMessage(null), 3000);
       } catch (error) {
+        if (isRedirectError(error)) {
+          throw error;
+        }
         console.error(error);
         setToastMessage({ type: 'error', text: "Failed to create candidate." });
       }

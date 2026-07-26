@@ -5,7 +5,9 @@ const menu = [
   { name: "Organizations", href: "/organizations" },
   { name: "Candidates", href: "/candidates" },
   { name: "Verifications", href: "/verifications" },
-  { name: "Reports", href: "/reports" },
+  { name: "Documents", href: "/documents" },
+  { name: "AI Intelligence", href: "/ai" },
+  { name: "Verification Engine", href: "/verification-engine" },
   { name: "Users", href: "/users" },
   { name: "Settings", href: "/settings" },
 ];

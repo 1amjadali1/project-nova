@@ -2,6 +2,7 @@
 
 import { createOrganization } from "@/app/actions/organization";
 import { useRef, useState, useTransition } from "react";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default function NewOrganizationForm() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -19,6 +20,9 @@ export default function NewOrganizationForm() {
         setToastMessage({ type: 'success', text: "Organization created successfully." });
         setTimeout(() => setToastMessage(null), 3000);
       } catch (error) {
+        if (isRedirectError(error)) {
+          throw error;
+        }
         console.error(error);
         setToastMessage({ type: 'error', text: "Failed to create organization." });
       }

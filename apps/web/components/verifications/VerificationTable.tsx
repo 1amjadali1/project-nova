@@ -1,10 +1,12 @@
 import StatusBadge from "./StatusBadge";
+import PriorityBadge from "./PriorityBadge";
 import ActionButtons from "./ActionButtons";
 
 type Verification = {
   id: string;
   type: string;
   status: string;
+  priority: string;
   notes: string | null;
   candidateId: string;
   candidate: {
@@ -31,6 +33,7 @@ export default function VerificationTable({ verifications }: Props) {
             <tr>
               <th scope="col" className="whitespace-nowrap px-6 py-4 font-medium">Candidate</th>
               <th scope="col" className="whitespace-nowrap px-6 py-4 font-medium">Type</th>
+              <th scope="col" className="whitespace-nowrap px-6 py-4 font-medium">Priority</th>
               <th scope="col" className="whitespace-nowrap px-6 py-4 font-medium">Status</th>
               <th scope="col" className="whitespace-nowrap px-6 py-4 font-medium">Requested On</th>
               <th scope="col" className="whitespace-nowrap px-6 py-4 text-center font-medium">Actions</th>
@@ -40,7 +43,7 @@ export default function VerificationTable({ verifications }: Props) {
             {verifications.length === 0 ? (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="px-6 py-16 text-center text-slate-400"
                 >
                   <div className="flex flex-col items-center justify-center">
@@ -79,6 +82,9 @@ export default function VerificationTable({ verifications }: Props) {
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 font-medium text-slate-300">
                     {verification.type.replace(/_/g, " ")}
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <PriorityBadge priority={verification.priority} />
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">
                     <StatusBadge status={verification.status} />
